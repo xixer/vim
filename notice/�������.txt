@@ -1,0 +1,32 @@
+assistant.zip		CTRL-X CTRL-L 补全整行TRL-X CTRL-N补全当前文件内的关键字CTRL-X CTRL-K补全 'dictionary' 的关键字CTRL-X CTRL-]补全标签CTRL-X CTRL-F补全文件名CTRL-X CTRL-U用户定义补全CTRL-X CTRL-O全能 (omni) 补全,Ctrl-h(V模式),原型quikfix中显示
+bufexplorer.zip 		缓冲区显示
+tabbar.vim		缓冲区以bar的形式显示(未装)
+ctags58   			拷贝ctags.exe至vim72目录
+taglist_45.zip		生成tag
+NERD_commenter.zip	注释
+NERD_tree.zip 		目录浏览
+vim-autocomplpop 		自动完成
+snipMate.zip		代码片断自动完成,如果TAB冲突,ESC后TAB输出(未装)
+supertab.vba		tab提示
+vimball.tar.gz		安装vba插件(so %)
+winmanager.vba		窗口管理(增加S默认程序打开,cd到指定目录C切换[选中窗口])
+css.vim			css 语法着色
+css_folding.vim		多行折叠为一行(未装)
+javascript.vim		javascript 语法着色
+jquery.vim			jquery 语法着色
+csExplorer.zip		配色选择(:ColorSchemeExplorer)
+vimtweak.zip		透明/最大化/置顶窗口
+dbext_1200.zip		SQL支持(未装)
+LargeFile.vba.gz		大文件/单行过长,处理速度优化
+mark.vba			标记 ,hl(标记光标所在字符),hh(清除标记),hr(搜索字符标记),*(当前标记的后一个) ,#(当前标记的前一个) ,/(所有中的后一个) ,?(所有中的前一个)
+zencoding.rar		快速编写html代码
+matchit.zip		扩展%进行标签级查找
+sessionman.vim		SESSION插件,SessionClose,SessionList,SessionOpen,SessionOpenLast,SessionSave,SessionSaveAs,SessionShowLast
+grep.rar			扩展搜索,Grep,egrep,fgrep,find,xargs,locate等(tool.rar为.exe与环境dll文件)
+xpt-0.4.8-r911.tgz		xptemplate,代码片段自动完成
+echofunc.vim		在输入(后,EX下显示函数原型,CTAG支持,(未装)
+php-doc.vim		php doc
+php.vim			php语法着色(修改版)
+fontsize-0.2.0.vba		增大/减*-小字体
+vimwiki-1-1-1.vba.gz		VIMWIKI(增加了ignore_file,autoload/wimwiki.html.vim)
+calendar.vim		日历插件,配合vimwiki使用
