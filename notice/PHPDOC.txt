@@ -1,0 +1,36 @@
+abstract    申明变量/类/方法为抽象
+access      指明这个变量、类、函数/方法的存取权限(private,public或proteced),使用范围：class,function,var,define,module
+author      函数作者的名字和邮箱地址 
+category    组织packages
+const       用来指明php中define的常量 
+copyright   指明版权信,使用范围：class，function，var，define，module，use息
+deprecated  指明不推荐或者是废弃的信,使用范围：class，function，var，define，module，constent，global，include
+example     该标记用于解析一段文件内容，并将他们高亮显示。Phpdoc会试图从该标记给的文件路径中读取文件内容 
+filesource  和example类似，只不过该标记将直接读取当前解析的php文件的内容并显示 
+final       指明这是一个最终的类、方法、属性，禁止派生、修改,使用范围：class,function,var,
+global      指明在此函数中引用的全局变量 
+ignore      用于在文档中忽略指定的关键字 
+internal    Mark documentation as private, internal to the software project 
+license     Display a hyperlink to a URL for a license(@license http://www.baidu.com 百度)
+link        类似于license,但还可以通过link指到文档中的任何一个关键字 
+method      "Magic" Method of a class. 
+name        为关键字指定一个别名 
+package     定义归属的包的信息,使用范围：页面级别的-> define，function，include 类级别的->class，var，methods.用于逻辑上将一个或几个关键字分到一组。.
+param       定义函数或者方法的参数信息 
+property    "Magic" Property of a class. 
+return      定义函数或者方法的返回值
+see         定义需要参考的函数、变量，并加入相应的超级连接
+since       指明该api函数或者方法是从哪个版本开始引入的 
+static      指明变量、类、函数是静态的
+staticvar   Document a static variable's use in a function/method 
+subpackage  Specify sub-package to group classes or functions and defines into. Requires @package tag 
+throws      指明此函数可能抛出的错误异常,及其发生的情况 
+todo        指明应该改进或没有实现的地方 
+tutorial    Display a link to the documentation for a tutorial 
+uses        Display a link to the documentation for an element, and create a backlink in the other element's documentation to this 
+var         定义说明变量/属性
+version     定义版本信息
+
+
+URL:http://manual.phpdoc.org/HTMLframesConverter/default/:
+
