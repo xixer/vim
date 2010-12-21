@@ -320,7 +320,7 @@ function! vimwiki_lst#kbd_cr() "{{{
   " This function is heavily relies on proper 'set comments' option.
   let cr = "\<CR>"
   if getline('.') =~ s:rx_cb_list_item()
-    let cr .= '[ ] '
+    let cr .= '['.g:vimwiki_listsyms[0].'] '
   endif
   return cr
 endfunction "}}}
