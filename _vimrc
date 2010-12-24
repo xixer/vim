@@ -79,7 +79,7 @@ if has("gui_running")
   " set color schema
   "colorscheme oceandeep
   colorscheme molokai
-  "colorscheme slate
+  "colorscheme cleanphp 
 
   " winpos
   set columns=104
