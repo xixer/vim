@@ -116,7 +116,7 @@ au BufRead,BufNewFile *.js set ft=javascript.jquery
 au BufRead,BufNewFile jquery.*.js set ft=javascript syntax=jquery
 
 set smarttab
-set lbr
+set nolbr
 set tw=0
 
 "Auto indent
@@ -443,6 +443,21 @@ map <C-F2> :exec 'silent !start cmd /k "cd /d "'.VimwikiGet('path_html').'" & sy
 map <S-F2> :VimwikiAll2HTML<cr>
 map <F2> :Vimwiki2HTML<cr> 
 
+" 自定义函数调用GIT进行pull push操作(-nargs=1 只接受一个参数)
+command -nargs=? Git call CallGit(<f-args>)
+" args改为...则为多参数,参考Timestamp()
+function! CallGit(...)
+  if a:0 == 1
+    if a:1 == 'wiki'
+      exec 'silent !start cmd /k "cd /d E:/wiki/ & sync"'
+    elseif a:1 == 'vim'
+      exec 'silent !start cmd /k "cd /d D:/vim/ & sync"'
+    endif
+  else 
+      exec 'silent !start cmd /k "cd /d "'.VimwikiGet('path_html').'" & sync"'
+  endif
+endfunction
+
 " no display cmd.exe
 nmap <Leader>x :silent ! start "1" "%:p"<CR>
 nmap K :silent ! start http://php.net/<cword><CR>
@@ -474,6 +489,9 @@ noremap <Leader>dm mmHmn:%s/<C-V><CR>//ge<CR>'nzt'm
 
 "Fast remove highlight search
 nmap <silent> <leader><CR> :noh<CR>
+"搜索选中文字,全文高度搜索
+"vnoremap <silent> <leader>/ y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
+"vnoremap <silent> <leader>? y?<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
 
 " PHP syntax check
 function! PHP_CheckSyntax()
@@ -486,7 +504,10 @@ function! PHP_CheckSyntax()
 endfunction
 
 " Perform :PHP_CheckSyntax()
-map <F5> :call PHP_CheckSyntax()<CR>
+" map <F5> :call PHP_CheckSyntax()<CR>
+
+autocmd FileType php compiler php
+autocmd FileType php map <buffer> <leader><space> <leader>cd:w<cr>:make %<cr>
 
 " autocmd
     fun! KeywordComplete()
@@ -677,3 +698,5 @@ au BufWritePre *.wiki call TimeStamp('false', '<!-- ', ' -->')
 for temp in [0,1,2,3,4,5,6,7,8,9]
 exe 'map <A-' . temp . '> ' . temp . 'gt'
 endfor
+
+
