@@ -444,7 +444,7 @@ map <S-F2> :VimwikiAll2HTML<cr>
 map <F2> :Vimwiki2HTML<cr> 
 
 " 自定义函数调用GIT进行pull push操作(-nargs=1 只接受一个参数)
-command -nargs=? Git call CallGit(<f-args>)
+command! -nargs=? Git call CallGit(<f-args>)
 " args改为...则为多参数,参考Timestamp()
 function! CallGit(...)
   if a:0 == 1
@@ -632,7 +632,7 @@ nnoremap <BS> c
 "nnoremap <C-y> <C-R>
 " ctrl + v
 "nnoremap <C-v> a<space>"+gP<esc>
-"inoremap <C-v> <C-O>"+gP
+inoremap <C-v> <C-O>"+gP
 
 "map <C-V> "+pa<Esc>
 "map! <C-V> <Esc>"+pa
