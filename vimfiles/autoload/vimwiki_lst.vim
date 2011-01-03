@@ -342,7 +342,7 @@ function! vimwiki_lst#kbd_oO(cmd) "{{{
   let m = matchstr(line, s:rx_list_item())
   let res = ''
   if line =~ s:rx_cb_list_item()
-    let res = substitute(m, '\s*$', ' ', '').'[ ] '
+    let res = substitute(m, '\s*$', ' ', '').'[0] '
   elseif line =~ s:rx_list_item()
     let res = substitute(m, '\s*$', ' ', '')
   elseif &autoindent || &smartindent

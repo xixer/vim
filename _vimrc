@@ -292,8 +292,8 @@ hi MarkWord6  ctermbg=Blue     ctermfg=Black  guibg=#9999FF    guifg=Black
 nmap <C-t><C-t> :call libcallnr("vimtweak.dll","SetAlpha",210)<CR> 
 nmap <C-t>Y :call libcallnr("vimtweak.dll","SetAlpha",255)<CR>
 "最大化/小化窗口
-nmap <C-m>M :call libcallnr("vimtweak.dll", "EnableMaximize", 0)<CR>
-nmap <C-m><C-m> :call libcallnr("vimtweak.dll", "EnableMaximize", 1)<CR>
+"nmap <C-m>M :call libcallnr("vimtweak.dll", "EnableMaximize", 0)<CR>
+"nmap <C-m><C-m> :call libcallnr("vimtweak.dll", "EnableMaximize", 1)<CR>
 
 "php.vim
 let php_alt_construct_parents = 1
@@ -412,15 +412,18 @@ let g:vimwiki_menu="Plugin.Vimwiki"
 " 待办事项进度0%,25%,50%,75%,100%
 let g:vimwiki_listsyms="01234"
 
-" 生成HTML时忽略指定文件列表(自定义)
-let g:vimwiki_ignore_html_files = '404.html,search.html,about.html'
+" 生成HTML时忽略指定文件列表(自定义,demo\/格式为指定忽略文件夹)
+let g:vimwiki_ignore_html_files = '404.html,search.html,about.html,demo\/'
 
 " 切换列表项开/关
 map <leader>tt <Plug>VimwikiToggleListItem
 
 " calendar.vim
-let g:calendar_monday = 1
+"let g:calendar_monday = 1
 let g:calendar_mark = 'left-fit'
+let g:calendar_mruler = '一月,二月,三月,四月,五月,六月,七月,八月,九月,十月,十一月,十二月'
+let g:calendar_wruler = '日 一 二 三 四 五 六'
+let g:calendar_navi_label = '上月,今天,下月'
 
 " sessionman(默认为保存)
 " let sessionman_save_on_exit = 0

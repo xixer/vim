@@ -1,4 +1,4 @@
-assistant.zip		CTRL-X CTRL-L 补全整行TRL-X CTRL-N补全当前文件内的关键字CTRL-X CTRL-K补全 'dictionary' 的关键字CTRL-X CTRL-]补全标签CTRL-X CTRL-F补全文件名CTRL-X CTRL-U用户定义补全CTRL-X CTRL-O全能 (omni) 补全,Ctrl-h(V模式),原型quikfix中显示
+assistant.zip		CTRL-X CTRL-L 补全整行TRL-X CTRL-N补全当前文件内的关键字CTRL-X CTRL-K补全 'dictionary' 的关键字CTRL-X CTRL-]补全标签CTRL-X CTRL-F补全文件名CTRL-X CTRL-U用户定义补全CTRL-X CTRL-O全能 (omni) 补全,Ctrl-h(V模式),原型quikfix中显示(未装)
 bufexplorer.zip 		缓冲区显示
 tabbar.vim		缓冲区以bar的形式显示(未装)
 ctags58   			拷贝ctags.exe至vim72目录
@@ -28,5 +28,5 @@ echofunc.vim		在输入(后,EX下显示函数原型,CTAG支持,(未装)
 php-doc.vim		php doc
 php.vim			php语法着色(修改版)
 fontsize-0.2.0.vba		增大/减*-小字体
-vimwiki-1-1-1.vba.gz		VIMWIKI(增加了ignore_file,autoload/wimwiki.html.vim)
+vimwiki-1-1-1.vba.gz		VIMWIKI(SEE:wiki.7color.org TODO)
 calendar.vim		日历插件,配合vimwiki使用

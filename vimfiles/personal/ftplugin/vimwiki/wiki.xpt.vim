@@ -29,7 +29,9 @@ XPT title "%title ... = ... =
 XPT dtitle "%title ... = ... =
 %title `date^
  = `date^ =
+== 日记 ==
 `cursor^
+== 已办事项 ==
 
 XPT ttitle "%title ... = ... =
 %title `tdate^

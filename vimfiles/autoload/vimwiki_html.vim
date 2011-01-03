@@ -139,6 +139,12 @@ function! s:get_html_footer() "{{{
   if VimwikiGet('html_footer') != "" && !s:warn_html_footer
     try
       let lines = readfile(expand(VimwikiGet('html_footer')))
+      if exists("*strftime")
+          if !exists('g:vimwiki_timestamp_format')
+              let g:vimwiki_timestamp_format = '%Y-%m-%d %H:%M:%S'
+          endif
+          call map(lines, 'substitute(v:val, "%time_stamp%", "'. strftime(g:vimwiki_timestamp_format) .'", "g")')
+      endif
       return lines
     catch /E484/
       let s:warn_html_footer = 1
@@ -175,15 +181,20 @@ function! s:delete_html_files(path) "{{{
   let htmlfiles = split(glob(a:path.'**/*.html'), '\n')
   let ignore_files = split(g:vimwiki_ignore_html_files, ',')
   " 处理忽略列表
-  if !empty(ignore_files)
-    for fname in htmlfiles
-      for ignore_file in ignore_files
+  "if !empty(ignore_files)
+  "  for fname in htmlfiles
+  "    for ignore_file in ignore_files
         " 过滤htmlfiles字典
-        if fname == a:path.ignore_file
-          let index = index(htmlfiles, a:path.ignore_file)
-          call remove(htmlfiles, index)
-        endif
-      endfor
+  "      if fname == a:path.ignore_file
+  "       let index = index(htmlfiles, a:path.ignore_file)
+  "       call remove(htmlfiles, index)
+  "     endif
+  "   endfor
+  " endfor
+  "endif
+  if !empty(ignore_files)
+    for ignore_file in ignore_files
+      call filter(htmlfiles, 'v:val !~ "'. a:path . ignore_file .'"')
     endfor
   endif
   for fname in htmlfiles
