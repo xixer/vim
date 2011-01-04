@@ -4,6 +4,9 @@ XPTemplate priority=all
 " containers
 let s:f = g:XPTfuncs()
 
+XPTvar $author $author is not set, you need to set g:xptemplate_vars="$author=your_name" in .vimrc
+XPTvar $email  $email is not set, you need to set g:xptemplate_vars="$email=your_email@com" in .vimrc
+
 XPTvar $VOID
 
 " if () ** {
@@ -677,7 +680,8 @@ endfunction
 " ================================= Snippets ===================================
 
 " Shortcuts
-
+call XPTdefineSnippet('Author', {}, '`$author^')
+call XPTdefineSnippet('Email', {}, '`$email^')
 call XPTdefineSnippet("Date", {}, "`date()^")
 call XPTdefineSnippet("File", {}, "`file()^")
 call XPTdefineSnippet("Path", {}, "`path()^")

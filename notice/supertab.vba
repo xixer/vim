@@ -2,7 +2,7 @@
 UseVimball
 finish
 doc/supertab.txt	[[[1
-308
+351
 *supertab.txt*
 
 Authors:
@@ -33,6 +33,7 @@ Supertab                                    *supertab*
     Midword completion                  |supertab-midword|
     Changing default mapping            |supertab-forwardbackward|
     Inserting true tabs                 |supertab-mappingtabliteral|
+    Enhanced longest match support      |supertab-longestenhanced|
     Preselecting the first entry        |supertab-longesthighlight|
 
 ==============================================================================
@@ -103,9 +104,18 @@ g:SuperTabMappingTabLiteral                 |supertab-mappingtabliteral|
   define the key combination to use to do just that.  By default Ctrl-Tab is
   used.
 
+g:SuperTabLongestEnhanced                   |supertab-longestenhanced|
+  When enabled and 'longest' is in your |completeopt| setting, supertab will
+  provide an enhanced longest match support where typing one or more letters
+  and hitting tab again while in a completion mode will complete the longest
+  common match using the new text in the buffer.
+
 g:SuperTabLongestHighlight                  |supertab-longesthighlight|
   When enabled and you have the completion popup enable and 'longest' in your
   completeopt, supertab will auto highlight the first selection in the popup.
+
+g:SuperTabCrMapping                         |supertab-crmapping|
+  When enabled, <cr> will end completion mode preserving the current text.
 
 
 Default Completion Type             *supertab-defaultcompletion*
@@ -300,6 +310,31 @@ something that is supported.  Alternatively, you can escape the <tab> with
 <c-v> (see |i_CTRL-V| for more infos).
 
 
+Enhanced longest match support      *supertab-longestenhanced*
+                                    *g:SuperTabLongestEnhanced*
+
+g:SuperTabLongestEnhanced (default value: 0)
+
+When enabled and 'longest' is in your |completeopt| setting, supertab will
+provide an enhanced longest match support where typing one or more letters and
+hitting tab again while in a completion mode will complete the longest common
+match using the new text in the buffer.
+
+For example, say you have a buffer with the following contents:
+  FooBarFoo
+  FooBar
+  Foo
+  FooBarBaz
+And you then type F<tab>.  Vim's builtin longest support will complete the
+longest common text 'Foo' and offer 'FooBarFoo', 'FooBar', 'Foo', and
+'FooBarBaz' as possible completions.  With supertab's longest match
+enhancement disabled, typing B<tab> while still in the completion mode will
+end up completing 'FooBarBaz' or 'FooBarFoo' depending your settings, instead
+of the next longest common match of 'FooBar'.  With supertab's enhanced
+longest match feature enabled, the typing of B<tab> will result in the next
+longest text being completed.
+
+
 Preselecting the first entry        *supertab-longesthighlight*
                                     *g:SuperTabLongestHighlight*
 
@@ -310,14 +345,22 @@ popup menu enabled and the 'longest' option as well. When enabled, <tab> will
 kick off completion and pre-select the first entry in the popup menu, allowing
 you to simply hit <enter> to use it.
 
+
+Mapping <cr> to end completion      *supertab-crmapping*
+                                    *g:SuperTabCrMapping*
+
+g:SuperTabCrMapping (default value: 1)
+
+When enabled, <cr> will cancel completion mode preserving the current text.
+
 vim:tw=78:ts=8:ft=help:norl:
 plugin/supertab.vim	[[[1
-510
+613
 " Author:
 "   Original: Gergely Kontra <kgergely@mcl.hu>
 "   Current:  Eric Van Dewoestine <ervandew@gmail.com> (as of version 0.4)
 "   Please direct all correspondence to Eric.
-" Version: 1.0
+" Version: 1.1
 " GetLatestVimScripts: 1643 1 :AutoInstall: supertab.vim
 "
 " Description: {{{
@@ -329,9 +372,7 @@ plugin/supertab.vim	[[[1
 " }}}
 "
 " License: {{{
-"   Software License Agreement (BSD License)
-"
-"   Copyright (c) 2002 - 2009
+"   Copyright (c) 2002 - 2010
 "   All rights reserved.
 "
 "   Redistribution and use of this software in source and binary forms, with
@@ -414,8 +455,16 @@ set cpo&vim
     let g:SuperTabMappingTabLiteral = '<c-tab>'
   endif
 
+  if !exists("g:SuperTabLongestEnhanced")
+    let g:SuperTabLongestEnhanced = 0
+  endif
+
   if !exists("g:SuperTabLongestHighlight")
     let g:SuperTabLongestHighlight = 0
+  endif
+
+  if !exists("g:SuperTabCrMapping")
+    let g:SuperTabCrMapping = 1
   endif
 
 " }}}
@@ -534,9 +583,13 @@ endfunction " }}}
 " s:InitBuffer {{{
 " Per buffer initilization.
 function! s:InitBuffer()
-  if exists("b:complType")
+  if exists('b:complType')
     return
   endif
+
+  let b:complReset = 0
+  let b:complTypeContext = ''
+  let b:capturing = 0
 
   " init hack for <c-x><c-v> workaround.
   let b:complCommandLine = 0
@@ -570,6 +623,11 @@ function! s:ManualCompletionEnter()
     " Hack to workaround bug when invoking command line completion via <c-r>=
     if complType == "\<c-x>\<c-v>"
       return s:CommandLineCompletion()
+    endif
+
+    " optionally enable enhanced longest completion
+    if g:SuperTabLongestEnhanced && &completeopt =~ 'longest'
+      call s:EnableLongestEnhancement()
     endif
 
     return complType
@@ -610,24 +668,45 @@ function! s:SuperTab(command)
     " supertab vars.
     call s:InitBuffer()
 
-    let key = ''
+    " optionally enable enhanced longest completion
+    if g:SuperTabLongestEnhanced && &completeopt =~ 'longest'
+      call s:EnableLongestEnhancement()
+    endif
+
     " highlight first result if longest enabled
     if g:SuperTabLongestHighlight && !pumvisible() && &completeopt =~ 'longest'
-      let key = (b:complType == "\<c-p>") ? "\<c-p>" : "\<c-n>"
+      let key = (b:complType == "\<c-p>") ? b:complType : "\<c-n>"
+      call feedkeys(key)
     endif
 
     " exception: if in <c-p> mode, then <c-n> should move up the list, and
     " <c-p> down the list.
-    if a:command == 'p' &&
+    if a:command == 'p' && !b:complReset &&
       \ (b:complType == "\<c-p>" ||
       \   (b:complType == 'context' &&
       \    tolower(g:SuperTabContextDefaultCompletionType) == '<c-p>'))
       return "\<c-n>"
-    elseif a:command == 'p' &&
+
+    elseif a:command == 'p' && !b:complReset &&
       \ (b:complType == "\<c-n>" ||
       \   (b:complType == 'context' &&
       \    tolower(g:SuperTabContextDefaultCompletionType) == '<c-n>'))
       return "\<c-p>"
+
+    " this used to handle call from captured keys with the longest enhancement
+    " enabled, but also must work when the enhancement is disabled.
+    elseif a:command == 'n' && pumvisible() && !b:complReset
+      if b:complType == 'context'
+        exec "let contextDefault = \"" .
+          \ escape(g:SuperTabContextDefaultCompletionType, '<') . "\""
+        " if we are in another completion mode, just scroll to the next
+        " completion
+        if b:complTypeContext != contextDefault
+          return "\<c-n>"
+        endif
+        return contextDefault
+      endif
+      return b:complType == "\<c-p>" ? b:complType : "\<c-n>"
     endif
 
     " handle 'context' completion.
@@ -637,14 +716,25 @@ function! s:SuperTab(command)
         exec "let complType = \"" .
           \ escape(g:SuperTabContextDefaultCompletionType, '<') . "\""
       endif
-      return complType . key
-    endif
+      let b:complTypeContext = complType
 
     " Hack to workaround bug when invoking command line completion via <c-r>=
-    if b:complType == "\<c-x>\<c-v>"
-      return s:CommandLineCompletion()
+    elseif b:complType == "\<c-x>\<c-v>"
+      let complType = s:CommandLineCompletion()
+    else
+      let complType = b:complType
     endif
-    return b:complType . key
+
+    if b:complReset
+      let b:complReset = 0
+      " not an accurate condition for everyone, but better than sending <c-e>
+      " at the wrong time.
+      if pumvisible()
+        return "\<c-e>" . complType
+      endif
+    endif
+
+    return complType
   endif
 
   return "\<tab>"
@@ -690,8 +780,7 @@ function! s:WillComplete()
   let cnum = col('.')
 
   " Start of line.
-  let prev_char = strpart(line, cnum - 2, 1)
-  if prev_char =~ '^\s*$'
+  if line =~ '^\s*\%' . cnum . 'c'
     return 0
   endif
 
@@ -707,6 +796,54 @@ function! s:WillComplete()
   "endif
 
   return 1
+endfunction " }}}
+
+" s:EnableLongestEnhancement() {{{
+function! s:EnableLongestEnhancement()
+  augroup supertab_reset
+    autocmd!
+    autocmd InsertLeave,CursorMovedI <buffer>
+      \ call s:ReleaseKeyPresses() | autocmd! supertab_reset
+    call s:CaptureKeyPresses()
+  augroup END
+endfunction " }}}
+
+" s:CompletionReset() {{{
+function! s:CompletionReset(char)
+  let b:complReset = 1
+  return a:char
+endfunction " }}}
+
+" s:CaptureKeyPresses() {{{
+function! s:CaptureKeyPresses()
+  if !b:capturing
+    let b:capturing = 1
+    " TODO: use &keyword to get an accurate list of chars to map
+    for c in split('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_', '.\zs')
+      exec 'imap <buffer> ' . c . ' <c-r>=<SID>CompletionReset("' . c . '")<cr>'
+    endfor
+    imap <buffer> <bs> <c-r>=<SID>CompletionReset("\<lt>c-h>")<cr>
+    imap <buffer> <c-h> <c-r>=<SID>CompletionReset("\<lt>c-h>")<cr>
+    exec 'imap <buffer> ' . g:SuperTabMappingForward . ' <c-r>=<SID>SuperTab("n")<cr>'
+  endif
+endfunction " }}}
+
+" s:ReleaseKeyPresses() {{{
+function! s:ReleaseKeyPresses()
+  if b:capturing
+    let b:capturing = 0
+    for c in split('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_', '.\zs')
+      exec 'iunmap <buffer> ' . c
+    endfor
+    iunmap <buffer> <bs>
+    iunmap <buffer> <c-h>
+    exec 'iunmap <buffer> ' . g:SuperTabMappingForward
+    if mode() == 'i'
+      " force full exit from completion mode (don't exit insert mode since
+      " that will break repeating with '.')
+      call feedkeys("\<space>\<bs>", 'n')
+    endif
+  endif
 endfunction " }}}
 
 " s:CommandLineCompletion() {{{
@@ -810,6 +947,15 @@ endfunction " }}}
   " <Tab>, but I hope it may not be a problem...
   inoremap <c-n> <c-r>=<SID>SuperTab('n')<cr>
   inoremap <c-p> <c-r>=<SID>SuperTab('p')<cr>
+
+  if g:SuperTabCrMapping
+    " using a <c-r> mapping instead of <expr>, seems to prevent evaluating
+    " other functions mapped to <cr> etc. (like endwise.vim)
+    inoremap <cr> <c-r>=<SID>SelectCompletion()<cr>
+    function s:SelectCompletion()
+      return pumvisible() ? "\<space>\<bs>" : "\<cr>"
+    endfunction
+  endif
 " }}}
 
 " Command Mappings {{{

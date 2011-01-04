@@ -58,6 +58,7 @@ language messages zh_CN.utf-8
 "set cursorline
 "set cursorline cursorcolumn 
 " set gui options  guioptions-->menu
+
 if has("gui_running")
   set guioptions=m
   "set guioptions=t
@@ -67,7 +68,7 @@ if has("gui_running")
   if has("win32")
     set guifont=Consolas:h9
     "set guifontwide=YaHei_Consolas_Hybrid:h9
-	set gfw=Yahei_Mono:h9:cGB2312
+	  set gfw=Yahei_Mono:h9:cGB2312
   else
     set guifont=DejaVu\ Sans\ Mono\ 9
     set fileencoding=utf-8
@@ -88,6 +89,8 @@ else
   set t_Co=256
   colorscheme darkblue
 endif
+
+
 
 " Enable filetype plugin
 filetype plugin on
@@ -350,16 +353,25 @@ let php_sync_method = -1
 
 " zencoding.vim
 let g:user_zen_settings = {  
+\  'html' : {
+\    'filters' : 'html',
+\    'indentation' : ' '
+\  },
 \  'php' : {  
 \    'extends' : 'html',  
 \    'filters' : 'c',  
 \  },  
-\  'xml' : {  
-\    'extends' : 'html',  
-\  },  
-\  'haml' : {  
-\    'extends' : 'html',  
-\  },  
+\  'css' : {
+\    'filters' : 'fc',
+\  },
+\  'javascript' : {
+\    'snippets' : {
+\      'jq' : "$(function() {\n\t${cursor}${child}\n});",
+\      'jq:each' : "$.each(arr, function(index, item)\n\t${child}\n});",
+\      'fn' : "(function() {\n\t${cursor}\n})();",
+\      'tm' : "setTimeout(function() {\n\t${cursor}\n}, 100);",
+\    },
+\  },
 \}
 
 " grep.vim
@@ -701,5 +713,3 @@ au BufWritePre *.wiki call TimeStamp('false', '<!-- ', ' -->')
 for temp in [0,1,2,3,4,5,6,7,8,9]
 exe 'map <A-' . temp . '> ' . temp . 'gt'
 endfor
-
-
