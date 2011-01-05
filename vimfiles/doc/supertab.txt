@@ -273,8 +273,8 @@ Changing the default mapping        *supertab-forwardbackward*
                                     *g:SuperTabMappingForward*
                                     *g:SuperTabMappingBackward*
 
-g:SuperTabMappingForward  (default value: '<tab>')
-g:SuperTabMappingBackward (default value: '<s-tab>')
+g:SuperTabMappingForward  (default value: '<tab>')(下一项)
+g:SuperTabMappingBackward (default value: '<s-tab>')(上一项)
 
 These two variables allow you to set the keys used to kick off the current
 completion.  By default this is <tab> and <s-tab>.  To change to something
@@ -302,7 +302,7 @@ otherwise attempt to kick off insert completion. The default is '<c-tab>'
 (ctrl-tab) which unfortunately might not work at the console. So if you are
 using a console vim and want this functionality, you may have to change it to
 something that is supported.  Alternatively, you can escape the <tab> with
-<c-v> (see |i_CTRL-V| for more infos).
+<c-v> (see |i_CTRL-V| for more infos).(console命令行使用)
 
 
 Enhanced longest match support      *supertab-longestenhanced*
@@ -327,7 +327,7 @@ enhancement disabled, typing B<tab> while still in the completion mode will
 end up completing 'FooBarBaz' or 'FooBarFoo' depending your settings, instead
 of the next longest common match of 'FooBar'.  With supertab's enhanced
 longest match feature enabled, the typing of B<tab> will result in the next
-longest text being completed.
+longest text being completed.(开启: 仅罗列首字母)
 
 
 Preselecting the first entry        *supertab-longesthighlight*
@@ -338,7 +338,7 @@ g:SuperTabLongestHighlight (default value: 0)
 Sets whether or not to pre-highlight the first match when completeopt has the
 popup menu enabled and the 'longest' option as well. When enabled, <tab> will
 kick off completion and pre-select the first entry in the popup menu, allowing
-you to simply hit <enter> to use it.
+you to simply hit <enter> to use it.(开启: 预先选择第一项)
 
 
 Mapping <cr> to end completion      *supertab-crmapping*
@@ -347,5 +347,6 @@ Mapping <cr> to end completion      *supertab-crmapping*
 g:SuperTabCrMapping (default value: 1)
 
 When enabled, <cr> will cancel completion mode preserving the current text.
+(开启: 回车取消自动完成模式,保留当前文字)
 
 vim:tw=78:ts=8:ft=help:norl:

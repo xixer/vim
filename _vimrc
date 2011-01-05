@@ -58,7 +58,6 @@ language messages zh_CN.utf-8
 "set cursorline
 "set cursorline cursorcolumn 
 " set gui options  guioptions-->menu
-
 if has("gui_running")
   set guioptions=m
   "set guioptions=t
@@ -89,8 +88,6 @@ else
   set t_Co=256
   colorscheme darkblue
 endif
-
-
 
 " Enable filetype plugin
 filetype plugin on
@@ -239,7 +236,9 @@ nmap <silent> <F8> :WMToggle<CR>
 
 " supertab.vim
 let g:SuperTabRetainCompletionType = 2
-let g:SuperTabDefaultCompletionType = "<C-X><C-O>" 
+let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
+let g:SuperTabCrMapping = 0
+let g:SuperTabLongestEnhanced = 1
 
 " fencview.vim
 let g:fencview_autodetect = 0  "打开文件时自动识别编码
@@ -317,7 +316,7 @@ let php_large_file = 3000
 "let php_smart_members = 0        
 "let php_smart_semicolon = 0        
 "let php_show_pcre = 0        
-let php_folding=0                  " 使用代码折叠        
+let php_folding=0                   " 使用代码折叠        
 let php_strict_blocks=1             "         
 "let php_fold_arrays=1              " 折叠数组        
 let php_baselib=1                   " 高亮基础函数库        
@@ -454,9 +453,9 @@ nmap <F12> :call system("ctags --exclude=Zend --languages=php --tag-relative=yes
 map <leader>e :tabf $MYVIMRC<CR>
 "map <leader>w :w! <CR>
 
-map <C-F2> :exec 'silent !start cmd /k "cd /d "'.VimwikiGet('path_html').'" & sync"'<cr>
-map <S-F2> :VimwikiAll2HTML<cr>
-map <F2> :Vimwiki2HTML<cr> 
+map <C-F2> :exec 'silent !start cmd /k "cd /d "'.VimwikiGet('path_html').'" & sync"'<CR>
+map <S-F2> :VimwikiAll2HTML<CR>
+map <F2> :Vimwiki2HTML<CR>
 
 " 自定义函数调用GIT进行pull push操作(-nargs=1 只接受一个参数)
 command! -nargs=? Git call CallGit(<f-args>)
@@ -497,7 +496,7 @@ set laststatus=2
 map <leader>cd :cd %:p:h<CR>
 
 "日期缩写
-iab xdate <c-r>=strftime("%c")<CR>
+"iab xdate <c-r>=strftime("%c")<CR>
 
 "Remove the Windows ^M
 noremap <Leader>dm mmHmn:%s/<C-V><CR>//ge<CR>'nzt'm
@@ -509,14 +508,14 @@ nmap <silent> <leader><CR> :noh<CR>
 "vnoremap <silent> <leader>? y?<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
 
 " PHP syntax check
-function! PHP_CheckSyntax()
-    setlocal makeprg=D:/Zend/ZendServer/bin/php.exe\ -l\ -n\ -d\ html_errors=off
-    setlocal shellpipe=>
+"function! PHP_CheckSyntax()
+"    setlocal makeprg=D:/Zend/ZendServer/bin/php.exe\ -l\ -n\ -d\ html_errors=off
+"    setlocal shellpipe=>
 
     " Use error format for parsing PHP error output
-    setlocal errorformat=%m\ in\ %f\ on\ line\ %l
-    make %
-endfunction
+"    setlocal errorformat=%m\ in\ %f\ on\ line\ %l
+"    make %
+"endfunction
 
 " Perform :PHP_CheckSyntax()
 " map <F5> :call PHP_CheckSyntax()<CR>
