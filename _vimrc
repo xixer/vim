@@ -153,7 +153,7 @@ set cmdheight=2
 set hid
 
 " Ignore case when searching
-set ignorecase
+"set ignorecase
 set incsearch
 
 " Set magic on
@@ -182,7 +182,7 @@ set noswapfile
 set backspace=start,indent,eol
 
 "关闭代码提示预览窗口
-set completeopt=longest,menu
+set completeopt=menu,longest
 
 " Set up automatic formatting
 set formatoptions+=tcqlro
@@ -235,10 +235,11 @@ nmap <silent> <F8> :WMToggle<CR>
 
 
 " supertab.vim
-let g:SuperTabRetainCompletionType = 2
+let g:SuperTabRetainCompletionDuration = "session"
 let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 let g:SuperTabCrMapping = 0
 let g:SuperTabLongestEnhanced = 1
+let g:SuperTabLongestHighlight = 1
 
 " fencview.vim
 let g:fencview_autodetect = 0  "打开文件时自动识别编码
