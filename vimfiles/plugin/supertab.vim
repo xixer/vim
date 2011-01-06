@@ -64,6 +64,7 @@ endif
 let s:save_cpo=&cpo
 set cpo&vim
 
+let g:bUserIgnoreCase = &ignorecase
 " Global Variables {{{
 
   if !exists("g:SuperTabDefaultCompletionType")
@@ -305,7 +306,11 @@ endfunction " }}}
 " previous entry in a completion list, and determines whether or not to simply
 " retain the normal usage of <tab> based on the cursor position.
 function! s:SuperTab(command)
-  if s:WillComplete()
+  " 当开始执行superTab时设置noignorecase,未实现C-x_C-o等方式补全
+  " 可以通过修改*complete.vim来实现C-x_C-o补全
+  set noignorecase
+  
+  if s:WillComplete() 
     " rare case where no autocmds have fired for this buffer to initialize the
     " supertab vars.
     call s:InitBuffer()
@@ -485,6 +490,11 @@ function! s:ReleaseKeyPresses()
       " that will break repeating with '.')
       call feedkeys("\<space>\<bs>", 'n')
     endif
+    " 当释放键绑定时,还原ignored
+    if g:bUserIgnoreCase
+      let &ignorecase = g:bUserIgnoreCase
+    endif
+
   endif
 endfunction " }}}
 

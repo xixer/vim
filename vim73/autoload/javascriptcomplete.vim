@@ -510,10 +510,11 @@ function! javascriptcomplete#CompleteJS(findstart, base)
 		endif
 
 		for m in values
+      
 			if m =~? '^'.a:base
 				call add(res, m)
-			elseif m =~? a:base
-				call add(res2, m)
+			"elseif m =~? a:base
+			"	call add(res2, m)
 			endif
 		endfor
 
@@ -595,13 +596,13 @@ function! javascriptcomplete#CompleteJS(findstart, base)
 	for m in values
 		if m =~? '^'.a:base
 			call add(res, m)
-		elseif m =~? a:base
-			call add(res2, m)
+"		elseif m =~? a:base
+"			call add(res2, m)
 		endif
 	endfor
-
 	let menu = res + res2
-	let final_menu = []
+	
+  let final_menu = []
 	for i in range(len(menu))
 		let item = menu[i]
 		if item =~ '($'

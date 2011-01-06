@@ -9,9 +9,6 @@ set fileformat=unix
 "confirm on file not save and only read
 "set confirm
 
-"增强模式中的命令行自动完成操作 
-set wildmenu 
-
 " 启动的时候不显示那个援助索马里儿童的提示 
 set shortmess=atI 
 
@@ -152,10 +149,6 @@ set cmdheight=2
 " Change buffer - without saving
 set hid
 
-" Ignore case when searching
-"set ignorecase
-set incsearch
-
 " Set magic on
 set magic
 
@@ -181,8 +174,16 @@ set noswapfile
 " smart backspace
 set backspace=start,indent,eol
 
+" Ignore case when searching
+set ignorecase
+set incsearch
+
+
 "关闭代码提示预览窗口
 set completeopt=menu,longest
+"增强模式中的命令行自动完成操作 
+set wildmenu 
+set wildmode=longest,list
 
 " Set up automatic formatting
 set formatoptions+=tcqlro
@@ -192,6 +193,13 @@ set textwidth=120
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugin configuration
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" acp.vim
+let g:acp_behavior = {
+\  'command' : "\<C-x>\<C-o>",
+\  'pattern' : printf('\(->\|::\|\$\)\k\{%d,}$', 0),
+\  'repeat'  : 0,
+\}
+
 " taglist.vim
 let Tlist_Auto_Highlight_Tag = 1
 let Tlist_Auto_Open = 0
@@ -525,17 +533,17 @@ autocmd FileType php compiler php
 autocmd FileType php map <buffer> <leader><space> <leader>cd:w<cr>:make %<cr>
 
 " autocmd
-    fun! KeywordComplete()
-    let left = strpart(getline('.'), col('.') - 2, 1)
-    if left =~ "^$"
-        return "\<Tab>"
-    elseif left =~ ' $'
-        return "\<Tab>"
-    else
-        return "\<C-N>"
-    endfun
-    inoremap <silent> <Tab> <C-R>=KeywordComplete()<CR>
-    
+    "fun! KeywordComplete()
+    "let left = strpart(getline('.'), col('.') - 2, 1)
+    "if left =~ "^$"
+    "   return "\<Tab>"
+    "elseif left =~ ' $'
+    "    return "\<Tab>"
+    "else
+    "    return "\<C-N>"
+    "endfun
+    "inoremap <silent> <Tab> <C-R>=KeywordComplete()<CR>
+
 "Restore cursor to file position in previous editing session(保存光标位置)
 set viminfo='10,\"100,:20,n~/.viminfo
 au BufReadPost * if line("'\"") > 0|if line("'\"") <= line("$")|exe("norm '\"")|else|exe "norm $"|endif|endif    

@@ -174,8 +174,8 @@ function! htmlcomplete#CompleteTags(findstart, base)
 			for m in entities
 				if m =~? '^'.a:base
 					call add(res, m.';')
-				elseif m =~? a:base
-					call add(res2, m.';')
+				"elseif m =~? a:base
+				"	call add(res2, m.';')
 				endif
 			endfor
 
@@ -383,8 +383,8 @@ function! htmlcomplete#CompleteTags(findstart, base)
 				for m in sort(values)
 					if m =~? '^'.entered_class
 						call add(res, m . classquote)
-					elseif m =~? entered_class
-						call add(res2, m . classquote)
+					"elseif m =~? entered_class
+					"	call add(res2, m . classquote)
 					endif
 				endfor
 
@@ -496,8 +496,8 @@ function! htmlcomplete#CompleteTags(findstart, base)
 				" part will be as first choices
 				if m =~ '^'.entered_value
 					call add(res, attrquoteopen . m . attrquote)
-				elseif m =~ entered_value
-					call add(res2, attrquoteopen . m . attrquote)
+				"elseif m =~ entered_value
+				"	call add(res2, attrquoteopen . m . attrquote)
 				endif
 			endfor
 
@@ -527,8 +527,8 @@ function! htmlcomplete#CompleteTags(findstart, base)
 		for m in sort(attrs)
 			if m =~ '^'.attr
 				call add(res, m)
-			elseif m =~ attr
-				call add(res2, m)
+			"elseif m =~ attr
+			"	call add(res2, m)
 			endif
 		endfor
 		let menu = res + res2
@@ -633,8 +633,8 @@ function! htmlcomplete#CompleteTags(findstart, base)
 	for m in sort(tags)
 		if m =~ '^'.context
 			call add(res, m)
-		elseif m =~ context
-			call add(res2, m)
+		"elseif m =~ context
+		"	call add(res2, m)
 		endif
 	endfor
 	let menu = res + res2

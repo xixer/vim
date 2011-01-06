@@ -36,7 +36,7 @@ function! phpcomplete#CompletePHP(findstart, base)
 			let line = getline('.')
 			let start = col('.') - 1
 			let curline = line('.')
-			let compl_begin = col('.') - 2
+			let compl_begin = col('.')- 2
 			while start >= 0 && line[start - 1] =~ '[a-zA-Z_0-9\x7f-\xff$]'
 				let start -= 1
 			endwhile
@@ -212,8 +212,8 @@ function! phpcomplete#CompletePHP(findstart, base)
 				for m in sort(keys(all_values))
 					if m =~ '^'.a:base && m !~ '::'
 						call add(res, m)
-					elseif m =~ '::'.a:base
-						call add(res2, m)
+					"elseif m =~ '::'.a:base
+					"	call add(res2, m)
 					endif
 				endfor
 
