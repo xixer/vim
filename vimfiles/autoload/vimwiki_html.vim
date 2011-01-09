@@ -766,16 +766,16 @@ function! s:process_tag_list(line, lists) "{{{
     let chk = matchlist(a:line, a:rx_list)
     if len(chk) > 0
       if chk[1] == g:vimwiki_listsyms[4]
-        let st_tag .= '<del>[4]'
+        let st_tag .= '<del>['.g:vimwiki_listsyms[4].']'
         let en_tag = '</del>'.a:en_tag
       elseif chk[1] == g:vimwiki_listsyms[0]
-        let st_tag .= '[0]'
+        let st_tag .= '['.g:vimwiki_listsyms[0].']'
       elseif chk[1] == g:vimwiki_listsyms[3]
-        let st_tag .= '[3]'
+        let st_tag .= '['.g:vimwiki_listsyms[3].']'
       elseif chk[1] == g:vimwiki_listsyms[2]
-        let st_tag .= '[2]'
+        let st_tag .= '['.g:vimwiki_listsyms[2].']'
       else
-        let st_tag .= '[1]'
+        let st_tag .= '['.g:vimwiki_listsyms[1].']'
       endif
     endif
     return [st_tag, en_tag]

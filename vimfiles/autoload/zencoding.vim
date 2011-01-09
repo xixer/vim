@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 22-Nov-2010.
+" Last Change: 06-Jan-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -61,8 +61,12 @@ function! s:zen_parseIntoTree(abbr, type)
     let indent = s:zen_settings.indentation
   endif
 
-  let abbr = substitute(abbr, '\([a-zA-Z][a-zA-Z0-9]*\)+\([()]\|$\)', '\="(".s:zen_getExpandos(type, submatch(1)).")".submatch(2)', 'i')
-  let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#]\{-}[a-zA-Z\!][a-zA-Z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
+  if s:zen_isExtends(type, "html")
+    let abbr = substitute(abbr, '\([a-zA-Z][a-zA-Z0-9]*\)+\([()]\|$\)', '\="(".s:zen_getExpandos(type, submatch(1)).")".submatch(2)', 'i')
+    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:\!\-]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
+  else
+    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:\!\+\-]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
+  endif
   let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
   let parent = root
   let last = root
@@ -82,6 +86,10 @@ function! s:zen_parseIntoTree(abbr, type)
       break
     endif
     if tag_name =~ '^#'
+      let attributes = tag_name . attributes
+      let tag_name = 'div'
+    endif
+    if tag_name =~ '^\.'
       let attributes = tag_name . attributes
       let tag_name = 'div'
     endif
@@ -327,8 +335,8 @@ function! s:zen_toString_haml(settings, current, type, inline, filters, itemno, 
     for attr in keys(current.attr)
       let val = current.attr[attr]
       if current.multiplier > 1
-        while val =~ '\$[^{]*'
-          let val = substitute(val, '\(\$\+\)\([^{]*\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+        while val =~ '\$\([^{]\|$\)'
+          let val = substitute(val, '\(\$\+\)\([^{]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
         endwhile
       endif
       if attr == 'id'
@@ -676,9 +684,6 @@ function! zencoding#expandAbbr(mode) range
     else
       let part = matchstr(line, '\(\S.*\)$')
     endif
-    if part =~ '!'
-      let part = substitute(part, '.*!', '!', '')
-    endif
     let rest = getline('.')[len(line):]
     let str = part
     let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
@@ -699,6 +704,7 @@ function! zencoding#expandAbbr(mode) range
         let expand .= '${cursor}'
       endif
     endif
+    let expand = substitute(expand, '${lang}', s:zen_settings.lang, 'g')
     let expand = substitute(expand, '${charset}', s:zen_settings.charset, 'g')
     let expand = substitute(expand, '\${cursor}', '$cursor$', '')
     let expand = substitute(expand, '\${cursor}', '', 'g')
@@ -727,6 +733,9 @@ function! zencoding#expandAbbr(mode) range
     let &selection = 'inclusive'
     silent! exe "normal! v7h\"_s"
     let &selection = oldselection
+  endif
+  if g:zencoding_debug > 1
+    call getchar()
   endif
 endfunction
 
@@ -1277,6 +1286,7 @@ function! zencoding#ExpandWord(abbr, type, orig)
     let expand .= s:zen_toString(item, a:type, 0, filters)
   endfor
   if a:orig == 0
+    let expand = substitute(expand, '\${lang}', s:zen_settings.lang, 'g')
     let expand = substitute(expand, '\${charset}', s:zen_settings.charset, 'g')
     let expand = substitute(expand, '\${cursor}', '', 'g')
   endif
@@ -1314,6 +1324,7 @@ endfunction
 unlet! s:zen_settings
 let s:zen_settings = {
 \    'indentation': "\t",
+\    'lang': "en",
 \    'charset': "UTF-8",
 \    'css': {
 \        'snippets': {
@@ -1796,7 +1807,7 @@ let s:zen_settings = {
 \            'cc:ie': "<!--[if IE]>\n\t${child}|\n<![endif]-->",
 \            'cc:noie': "<!--[if !IE]><!-->\n\t${child}|\n<!--<![endif]-->",
 \            'html:4t': "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n"
-\                    ."<html>\n"
+\                    ."<html lang=\"${lang}\">\n"
 \                    ."<head>\n"
 \                    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\">\n"
 \                    ."    <title></title>\n"
@@ -1804,7 +1815,7 @@ let s:zen_settings = {
 \                    ."<body>\n\t${child}|\n</body>\n"
 \                    ."</html>",
 \            'html:4s': "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n"
-\                    ."<html>\n"
+\                    ."<html lang=\"${lang}\">\n"
 \                    ."<head>\n"
 \                    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\">\n"
 \                    ."    <title></title>\n"
@@ -1812,7 +1823,7 @@ let s:zen_settings = {
 \                    ."<body>\n\t${child}|\n</body>\n"
 \                    ."</html>",
 \            'html:xt': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
-\                    ."<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+\                    ."<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"${lang}\">\n"
 \                    ."<head>\n"
 \                    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\" />\n"
 \                    ."    <title></title>\n"
@@ -1820,7 +1831,7 @@ let s:zen_settings = {
 \                    ."<body>\n\t${child}|\n</body>\n"
 \                    ."</html>",
 \            'html:xs': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-\                    ."<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+\                    ."<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"${lang}\">\n"
 \                    ."<head>\n"
 \                    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\" />\n"
 \                    ."    <title></title>\n"
@@ -1828,7 +1839,7 @@ let s:zen_settings = {
 \                    ."<body>\n\t${child}|\n</body>\n"
 \                    ."</html>",
 \            'html:xxs': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n"
-\                    ."<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+\                    ."<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"${lang}\">\n"
 \                    ."<head>\n"
 \                    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=${charset}\" />\n"
 \                    ."    <title></title>\n"
@@ -1836,7 +1847,7 @@ let s:zen_settings = {
 \                    ."<body>\n\t${child}|\n</body>\n"
 \                    ."</html>",
 \            'html:5': "<!DOCTYPE HTML>\n"
-\                    ."<html>\n"
+\                    ."<html lang=\"${lang}\">\n"
 \                    ."<head>\n"
 \                    ."    <meta charset=\"${charset}\">\n"
 \                    ."    <title></title>\n"
@@ -1926,7 +1937,7 @@ let s:zen_settings = {
 \            'menu:t': {'type': 'toolbar'},
 \            'video': {'src': ''},
 \            'audio': {'src': ''},
-\            'html:xml': [{'xmlns': 'http://www.w3.org/1999/xhtml'}]
+\            'html:xml': [{'xmlns': 'http://www.w3.org/1999/xhtml'}, {'xml:lang': '${lang}'}]
 \        },
 \        'aliases': {
 \            'link:*': 'link',

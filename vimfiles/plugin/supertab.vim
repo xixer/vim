@@ -494,7 +494,6 @@ function! s:ReleaseKeyPresses()
     if g:bUserIgnoreCase
       let &ignorecase = g:bUserIgnoreCase
     endif
-
   endif
 endfunction " }}}
 

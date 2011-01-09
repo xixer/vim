@@ -1,0 +1,1070 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>D:/Vim/vimfiles/doc/windows.cnx.html</title>
+<meta name="Generator" content="Vim/7.3">
+<meta name="plugin-version" content="vim7.3_v6">
+<meta name="syntax" content="help">
+<meta name="settings" content="use_css">
+<style type="text/css">
+<!--
+pre { font-family: monospace; color: #f8f8f2; background-color: #1b1d1e; }
+body { font-family: monospace; color: #f8f8f2; background-color: #1b1d1e; }
+.Statement { color: #f92672; font-weight: bold; }
+.Type { color: #66d9ef; }
+.Comment { color: #465457; }
+.Ignore { color: #808080; background-color: #1b1d1e; }
+.Todo { color: #ffffff; background-color: #1b1d1e; font-weight: bold; }
+.PreProc { color: #a6e22e; }
+.Special { color: #66d9ef; background-color: #1b1d1e; font-style: italic; }
+.Identifier { color: #fd971f; }
+.String { color: #e6db74; }
+-->
+</style>
+</head>
+<body>
+<pre>
+<span class="String">windows.txt</span>   For <span class="Identifier">Vim version 7.3.</span>  最后更新: 2010年8月
+
+
+                  VIM  参 考 手 册    作者: Bram Moolenaar
+                                      <span class="Identifier">译者</span>: Dasn
+                                      <span class="String"><a href="http://vimcdoc.sf.net">http://vimcdoc.sf.net</a></span>
+
+
+使用多个窗口和缓冲区进行编辑                            <span class="String">windows</span> <span class="String">buffers</span>
+
+本章我们看一下操作多个窗口和缓冲区的命令。另外有些命令在操作多个窗口的时候不同
+于单个窗口，这些命令也会在本章被介绍。
+
+一些基本的内容在用户手册的第 7、8 两个章节里 <span class="Identifier">usr_07.txt</span> <span class="Identifier">usr_08.txt</span> 已经介
+绍过了。
+
+1.  简介                                        <span class="Identifier">windows-intro</span>
+2.  启动 Vim                                    <span class="Identifier">windows-starting</span>
+3.  打开和关闭窗口                              <span class="Identifier">opening-window</span>
+4.  把光标移动到另一个窗口                      <span class="Identifier">window-move-cursor</span>
+5.  移动窗口                                    <span class="Identifier">window-moving</span>
+6.  改变窗口大小                                <span class="Identifier">window-resize</span>
+7.  参数和缓冲区列表的命令                      <span class="Identifier">buffer-list</span>
+8.  在所有的缓冲区和窗口里执行命令              <span class="Identifier">list-repeat</span>
+9.  当前光标处的标签和文件名                    <span class="Identifier">window-tag</span>
+10. 预览窗口                                    <span class="Identifier">preview-window</span>
+11. 使用隐藏缓冲区                              <span class="Identifier">buffer-hidden</span>
+12. 特殊类型缓冲区                              <span class="Identifier">special-buffers</span>
+
+<span class="Special">{Vi 没有这些命令}</span>
+<span class="Special">{仅当编译时加入 </span><span class="Identifier">+windows</span><span class="Special"> 特性才能使用多窗口功能}</span>
+<span class="Special">{仅当编译时加入 </span><span class="Identifier">+vertsplit</span><span class="Special"> 特性才能使用垂直分割窗口功能}</span>
+
+<span class="PreProc">==============================================================================</span>
+1. 简介                                         <span class="String">windows-intro</span> <span class="String">window</span>
+
+小结:
+   缓冲区是内存中的文件文本。
+   窗口是缓冲区的视窗。
+   标签页是窗口的集合。
+
+&quot;窗口&quot; 被用来查看缓冲区里的内容。你可以用多个窗口观察同一个缓冲区，也可以用多
+个窗口观察不同的缓冲区。
+
+&quot;缓冲区&quot; 是一块内存区域，里面存储着正在编辑的文件。如果没有把缓冲区里的文件存
+盘，那么原始文件不会被更改。
+
+缓冲区的状态可以是下述三种情况之一：
+
+                                                        <span class="String">active-buffer</span>
+激活：    缓冲区的内容在窗口里显示。如果该缓冲区是针对某一个文件创建的，那么该
+          文件已经被读入缓冲区。如果缓冲区被更改过，其内容便会与原文件不同。
+                                                        <span class="String">hidden-buffer</span>
+隐藏：    缓冲区的内容不被显示。如果该缓冲区是针对某一个文件创建的，那么该文件
+          已经被读入缓冲区。除此以外，与激活状态一样，只是你看不见它。
+                                                        <span class="String">inactive-buffer</span>
+非激活：  缓冲区的内容不被显示，也不包含任何数据。如果曾经载入过文件，与该缓冲
+          区相关的选项会被记住。它可以包括来自 <span class="Identifier">viminfo</span> 文件的位置标记，但是
+          这种缓冲区不包含文本。
+
+用一个表来说明：
+
+<span class="PreProc">状态            在窗口显示      文件载入        &quot;:buffers&quot; 命令显示</span>
+激活                是             是             'a'
+隐藏                否             是             'h'
+非激活              否             否             ' '
+
+<span class="Todo">备注</span>: 所有的 <span class="Special">CTRL-W</span> 命令都可以用 <span class="Identifier">:wincmd</span> 执行，当我们不能输入普通模式命令，
+或者输入不方便时可以试一下。
+
+主 Vim 窗口可以容纳多个分割的窗口。此外还有标签页 <span class="Identifier">tab-page</span>，每个标签页能容纳
+多个窗口。
+
+<span class="PreProc">==============================================================================</span>
+2. 启动 Vim                                             <span class="String">windows-starting</span>
+
+在默认情况下，与 Vi 类似，Vim 启动后只打开一个窗口。
+
+参数 &quot;-o&quot; 和 &quot;-O&quot; 可以让 Vim 为参数列表里的每一个文件打开一个窗口。参数 &quot;-o&quot;
+水平分割窗口；参数 &quot;-O&quot; 垂直分割窗口。如果 &quot;-o&quot; 和 &quot;-O&quot; 都用了，那么最后一个参
+数决定分割的方向。例如，下面的例子打开三个水平分割的窗口：<span class="Ignore"> &gt;</span>
+<span class="Comment">        vim -o file1 file2 file3</span>
+
+参数 &quot;-oN&quot;，这里的 <span class="Special">N</span> 是一个十进制数，用这个参数可以打开 <span class="Special">N</span> 个水平分割的窗口。
+如果文件名的个数多于窗口数目，则只打开 <span class="Special">N</span> 个窗口，这样有一些文件就得不到窗口来
+显示。如果指定的窗口数多于文件的个数，那么后面的几个窗口会编辑空的缓冲区。同
+样， &quot;-ON&quot;  打开 <span class="Special">N</span> 个垂直分割的窗口，相应的规则与 &quot;-oN&quot; 相同。
+
+如果你打开了很多的文件，每个窗口都会便得很小。你可能需要设置 <span class="Type">'winheight'</span> 和
+<span class="Type">'winwidth'</span> 选项来创建一个适合工作的环境。
+
+Buf/Win Enter/Leave 等自动命令 <span class="Identifier">autocommand</span> 不会在打开窗口或读取文件时运行，
+只有在真正进入缓冲区后才会执行。
+
+                                                        <span class="String">status-line</span>
+状态行用来分割窗口。选项 <span class="Type">'laststatus'</span> 用来设置最后一个窗口在什么时候可以有状态
+栏：
+        <span class="Type">'laststatus'</span> = 0        永远不会有状态行
+        <span class="Type">'laststatus'</span> = 1        窗口数多于一个的时候
+        <span class="Type">'laststatus'</span> = 2        总是显示状态行
+
+你可以通过设置 <span class="Type">'statusline'</span> 选项来改变状态行的内容。此选项可以局部于窗口，所以
+你可以为每个窗口设置不同的状态行。
+
+通常状态行用反色显示。你可以通过修改 <span class="Type">'highlight'</span> 选项中的 's' 字符来改变。例
+如，&quot;sb&quot; 设置为粗体字。如果状态行没有启用高亮 (&quot;sn&quot;)，那么字符 '^' 表示当前窗
+口，字符 '=' 表示其它窗口。如果支持鼠标并且已经通过设置 <span class="Type">'mouse'</span> 选项使之启动，
+那么你可以用鼠标拖动状态行以改变窗口的大小。
+
+<span class="Todo">备注</span>: 如果你想让状态行以反色显示，但是没有效果。查看一下 <span class="Type">'highlight'</span> 选项是否
+包含了 &quot;si&quot;。在 3.0 版本里，这意味着逆转 (invert) 状态行。但是现在应该使用
+&quot;sr&quot;，反转 (reverse) 状态行，因为 &quot;si&quot; 现在表示斜体 (italic)！如果你的终端不支
+持斜体，那么状态行还是会以反色显示；这种问题只会出现在有斜体的 termcap 码的终
+端上。
+
+<span class="PreProc">==============================================================================</span>
+3. 打开和关闭窗口                                       <span class="String">opening-window</span> <span class="String">E36</span>
+
+<span class="Special">CTRL-W</span> s                                                <span class="String">CTRL-W_s</span>
+<span class="Statement">CTRL-W S                                                </span><span class="String">CTRL-W_S</span>
+<span class="Statement">CTRL-W CTRL-S                                           </span><span class="String">CTRL-W_CTRL-S</span>
+:<span class="Special">[N]</span>sp[lit] <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span>                              <span class="String">:sp</span> <span class="String">:split</span>
+                把当前窗口分割成两个，结果是两个窗口显示同一个文件。新打开的窗
+                口高度为 <span class="Special">N</span> (默认值是当前窗口高度的一半)。减少当前窗口的高度，
+                空出地方给新的窗口 (如果你置位了 <span class="Type">'equalalways'</span> 选项，并且
+                <span class="Type">'eadirection'</span> 没有设置为 &quot;hor&quot;，并且其它窗口中的一个高于当前或
+                新窗口的话，其它窗口也被影响)。
+                <span class="Todo">备注</span>: 不是在所有的终端都能使用 <span class="Special">CTRL-S</span>，并且可能导致不能继续输
+                入，遇到这种情况，用 <span class="Special">CTRL-Q</span> 继续。参见 <span class="Identifier">++opt</span> 和 <span class="Identifier">+cmd</span>。
+
+<span class="Statement">CTRL-W CTRL-V                                           </span><span class="String">CTRL-W_CTRL-V</span>
+<span class="Special">CTRL-W</span> v                                                <span class="String">CTRL-W_v</span>
+:<span class="Special">[N]</span>vs[plit] <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span> <span class="Special">[file]</span>                      <span class="String">:vs</span> <span class="String">:vsplit</span>
+                与 <span class="Identifier">:split</span> 类似，但垂直分割窗口。满足以下条件的话，窗口会被均
+                匀地水平铺开:
+                1. 没有指定宽度，
+                2. 打开了 <span class="Type">'equalalways'</span> 选项，
+                3. <span class="Type">'eadirection'</span> 不是 &quot;ver&quot;，且
+                4. 其它窗口中的一个宽于当前或新窗口。
+                <span class="Todo">备注</span>: 在其它地方 <span class="Special">CTRL-Q</span> 与 <span class="Special">CTRL-V</span> 相同，但是在这里不是！
+
+<span class="Special">CTRL-W</span> n                                                <span class="String">CTRL-W_n</span>
+<span class="Special">CTRL-W</span> CTRL_N                                           <span class="String">CTRL-W_CTRL-N</span>
+:<span class="Special">[N]</span>new <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span>                                  <span class="String">:new</span>
+                创建一个新窗口并且开始编辑一个空文件。新窗口的高度为 <span class="Special">N</span> (默认值
+                为现存高度的一半)。减少当前窗口的高度，为新窗口留出空间 (如果
+                你打开了 <span class="Type">'equalalways'</span> 选项，并且 <span class="Type">'eadirection'</span> 没有设置为
+                &quot;hor&quot;，其它窗口也会被影响)。
+                参见：<span class="Identifier">++opt</span> and <span class="Identifier">+cmd</span>。
+                如果设置了 <span class="Type">'fileformats'</span> 选项，那么新缓冲区会使用其中的第一个
+                格式。如果 <span class="Type">'fileformats'</span> 为空，那么使用当前缓冲区的
+                <span class="Type">'fileformat'</span> 值。这个值可以被 <span class="Identifier">++opt</span> 参数覆盖。
+                自动命令以如下顺序被执行：
+                1. 在当前窗口执行 WinLeave
+                2. 在新窗口里执行 WinEnter
+                3. 在当前缓冲区执行 BufLeave
+                4. 在新缓冲区执行 BufEnter
+                这跟先执行 &quot;:split&quot;，再执行一个 &quot;:e&quot; 命令的效果差不多。
+
+:<span class="Special">[N]</span>vne[w] <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span> <span class="Special">[file]</span>                        <span class="String">:vne</span> <span class="String">:vnew</span>
+                与 <span class="Identifier">:new</span> 命令相似，但是它垂直分割窗口，如果打开了
+                <span class="Type">'equalalways'</span> 选项，并且选项 <span class="Type">'eadirection'</span> 没有设置为 &quot;ver&quot;，
+                窗口会被均匀地水平铺开，除非你给出了指定窗口宽度的参数。
+
+:<span class="Special">[N]</span>new <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span> <span class="Special">{file}</span>
+:<span class="Special">[N]</span>sp[lit] <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span> <span class="Special">{file}</span>                       <span class="String">:split_f</span>
+                创建一个新的窗口，并且开始编辑文件 <span class="Special">{file}</span>。如果使用了 <span class="Special">[+cmd]</span>
+                参数，文件加载完毕后会执行命令 <span class="Identifier">+cmd</span>。
+                也参见：<span class="Identifier">++opt</span>。
+                新窗口的高度为 <span class="Special">N</span> (默认值为现存高度的一半)。减少当前窗口的高
+                度，为新窗口留出空间 (如果你打开了 <span class="Type">'equalalways'</span> 选项，其它窗
+                口也会被影响)。
+
+:<span class="Special">[N]</span>sv[iew] <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span> <span class="Special">{file}</span>               <span class="String">:sv</span> <span class="String">:sview</span> <span class="String">splitview</span>
+                与 &quot;:split&quot; 命令相同，但是会给缓冲区置位 <span class="Type">'readonly'</span> 选项。
+
+:<span class="Special">[N]</span>sf[ind] <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span> <span class="Special">{file}</span>               <span class="String">:sf</span> <span class="String">:sfind</span> <span class="String">splitfind</span>
+                与 &quot;:split&quot; 命令相同，但是会在 <span class="Type">'path'</span> 里寻找 <span class="Special">{file}</span>，就像
+                <span class="Identifier">:find</span> 那样。如果找不到，就不会分割窗口。
+
+<span class="Special">CTRL-W</span> <span class="Special">CTRL-^</span>                                   <span class="String">CTRL-W_CTRL-^</span> <span class="String">CTRL-W_^</span>
+<span class="Special">CTRL-W</span> ^        执行 &quot;:split #&quot; 命令，把窗口分成两个，并且编辑轮换文件。如果指
+                定了计数，就变成了 &quot;:split #N&quot;，分割窗口，并且编辑第 <span class="Special">N</span> 个缓冲
+                区。
+
+<span class="Todo">注意</span> <span class="Type">'splitbelow'</span> 和 <span class="Type">'splitright'</span> 选项会影响新窗口的位置。
+
+                                                <span class="String">:vert</span> <span class="String">:vertical</span>
+:vert[ical] <span class="Special">{cmd}</span>
+                执行 <span class="Special">{cmd}</span>。如果包含一个分割窗口的命令，那么将垂直分割窗口。
+                不能用于 <span class="Identifier">:execute</span> 和 <span class="Identifier">:normal</span>。
+
+:lefta[bove] <span class="Special">{cmd}</span>                              <span class="String">:lefta</span> <span class="String">:leftabove</span>
+:abo[veleft] <span class="Special">{cmd}</span>                              <span class="String">:abo</span> <span class="String">:aboveleft</span>
+                执行 <span class="Special">{cmd}</span>。如果包含一个分割窗口的命令，那么将从当前窗口的左
+                (垂直分割) 或者上方 (水平分割) 分割窗口，而忽略 <span class="Type">'splitbelow'</span>
+                和 <span class="Type">'splitright'</span> 的设置。
+                不能用于 <span class="Identifier">:execute</span> 和 <span class="Identifier">:normal</span>。
+
+:rightb[elow] <span class="Special">{cmd}</span>                             <span class="String">:rightb</span> <span class="String">:rightbelow</span>
+:bel[owright] <span class="Special">{cmd}</span>                             <span class="String">:bel</span> <span class="String">:belowright</span>
+                执行 <span class="Special">{cmd}</span>。如果包含一个分割窗口的命令，那么将从当前窗口的右
+                (垂直分割) 或者下方 (水平分割) 分割窗口，而忽略 <span class="Type">'splitbelow'</span>
+                和 <span class="Type">'splitright'</span> 的设置。
+                不能用于 <span class="Identifier">:execute</span> 和 <span class="Identifier">:normal</span>。
+
+                                                <span class="String">:topleft</span> <span class="String">E442</span>
+:to[pleft] <span class="Special">{cmd}</span>
+                执行 <span class="Special">{cmd}</span>。如果包含一个分割窗口的命令，那么该窗口出现在顶部，
+                并且占据最大宽度。当垂直分割窗口时，窗口出现在最左边，并且占据
+                最大高度。
+                不能用于 <span class="Identifier">:execute</span> 和 <span class="Identifier">:normal</span>。
+
+                                                <span class="String">:botright</span>
+:bo[tright] <span class="Special">{cmd}</span>
+                执行 <span class="Special">{cmd}</span>。如果包含一个分割窗口的命令，那么该窗口出现在底部，
+                并且占据最大宽度。当垂直分割窗口时，窗口出现在最右边，并且占据
+                最大高度。
+                不能用于 <span class="Identifier">:execute</span> 和 <span class="Identifier">:normal</span>。
+
+这些修饰符可以结合使用来打开一个垂直分割的并且占据最大高度的窗口：<span class="Ignore"> &gt;</span>
+<span class="Comment">        :vertical topleft edit tags</span>
+在 Vim 窗口最左边打开一个垂直分割的、最大高度的窗口，用来编辑 tags 文件。
+
+
+关闭窗口
+<span class="PreProc">----------------</span>
+
+<span class="Special">CTRL-W</span> q                                                <span class="String">CTRL-W_q</span>
+<span class="Statement">CTRL-W CTRL-Q                                           </span><span class="String">CTRL-W_CTRL-Q</span>
+:q[uit]         退出当前窗口。如果退出的是最后一个窗口 (不包括帮助窗口)，就会
+                退出 Vim。
+                如果置位了 <span class="Type">'hidden'</span> 并且只有此一个窗口监视当前缓冲区，那么该缓
+                冲区被隐藏。
+                如果没有置位 <span class="Type">'hidden'</span>，并且只有当前这一个窗口监视该缓冲区，而
+                且缓冲区被修改了，那么该命令不会成功。
+                (<span class="Todo">注意</span>：<span class="Special">CTRL-Q</span> 不是在所有的终端下都好用)
+
+:q[uit]!        退出当前窗口。如果这是缓冲区的最后一个窗口，那么对于此缓冲区的
+                改动将全部丢失。如果退出的是最后一个窗口 (不包括帮助窗口)，就
+                会退出 Vim。缓冲区里的全部内容将丢失。即使置位了 <span class="Type">'hidden'</span> 选项
+                也是如此。
+
+<span class="Special">CTRL-W</span> c                                        <span class="String">CTRL-W_c</span> <span class="String">:clo</span> <span class="String">:close</span>
+:clo[se][!]     关闭当前窗口。如果置位了 <span class="Type">'hidden'</span>，或者改动了缓冲区但是命令里
+                用了 [!]，缓冲区会被隐藏 (除非还有一个窗口在编辑该缓冲区)。
+                如果当前标签页只有一个窗口而且有其它标签页，关闭当前标签页。
+                <span class="Identifier">tab-page</span>。
+                该命令在下述情况下会失败：                      <span class="String">E444</span>
+                - 屏幕上只剩下最后一个窗口的时候。
+                - 当 <span class="Type">'hidden'</span> 没有置位，也没有用 [!]，并且缓冲区也已经被修改，
+                  而且也没有其它窗口监视该缓冲区的时候。
+                对缓冲区的改动既不写入文件，也不会丢失，所以这是个 &quot;安全&quot; 的命
+                令。
+
+<span class="Statement">CTRL-W CTRL-C                                           </span><span class="String">CTRL-W_CTRL-C</span>
+                你可能会认为 <span class="Special">CTRL-W</span> <span class="Special">CTRL-C</span> 关闭当前窗口，但是这不行，因为
+                <span class="Special">CTRL-C</span> 会撤消整个命令。
+
+                                                        <span class="String">:hide</span>
+:hid[e]         除非是屏幕上的最后一个窗口，退出当前窗口，缓冲区被隐藏起来
+                (除非还有另一个窗口正在编辑它，或者 <span class="Type">'bufhidden'</span> 设置为
+                &quot;unload&quot; 或 &quot;delete&quot;)。
+                如果这是当前标签页的最后一个窗口，关闭此标签页。<span class="Identifier">tab-page</span>
+                此命令不受 <span class="Type">'hidden'</span> 的值影响。
+                对缓冲区的改动既不写入文件，也不会丢失，所以这是个 &quot;安全&quot; 的命
+                令。
+
+:hid[e] <span class="Special">{cmd}</span>   执行 <span class="Special">{cmd}</span>，其间置位 <span class="Type">'hidden'</span> 选项。<span class="Special">{cmd}</span> 执行完毕后，先前的
+                <span class="Type">'hidden'</span> 选项会被恢复。
+                例如：<span class="Ignore"> &gt;</span>
+<span class="Comment">                    :hide edit Makefile</span>
+<span class="Ignore">&lt;</span>               编辑 &quot;Makefile&quot; 文件，如果当前缓冲区有改动的话，隐藏之。
+
+<span class="Special">CTRL-W</span> o                                                <span class="String">CTRL-W_o</span> <span class="String">E445</span>
+<span class="Statement">CTRL-W CTRL-O                                   </span><span class="String">CTRL-W_CTRL-O</span> <span class="String">:on</span> <span class="String">:only</span>
+:on[ly][!]      使当前窗口成为屏幕上唯一的窗口。其它窗口都关闭。
+                如果置位了 <span class="Type">'hidden'</span> 选项，被关闭窗口里的所有缓冲区变成隐藏。
+                如果没有置位 <span class="Type">'hidden'</span>，但是置位了 <span class="Type">'autowrite'</span> 选项，那么已经更
+                改的缓冲区被写入文件。否则，除非使用 [!] 强制关闭，那些包含修
+                改过的缓冲区的窗口不被删除，它们转入隐藏状态。因为修改过的缓冲
+                区永远不会被放弃，缓冲区的改动也永远不会丢失。
+
+<span class="PreProc">==============================================================================</span>
+4. 把光标移动到另一个窗口                       <span class="String">window-move-cursor</span>
+
+<span class="Special">CTRL-W</span> <span class="Special">&lt;Down&gt;</span>                                   <span class="String">CTRL-W_&lt;Down&gt;</span>
+<span class="Statement">CTRL-W CTRL-J                                   </span><span class="String">CTRL-W_CTRL-J</span> <span class="String">CTRL-W_j</span>
+<span class="Special">CTRL-W</span> j        把光标向下移动 <span class="Special">N</span> 个窗口。用光标的位置在若干窗口之间做出选择。
+
+<span class="Special">CTRL-W</span> <span class="Special">&lt;Up&gt;</span>                                     <span class="String">CTRL-W_&lt;Up&gt;</span>
+<span class="Statement">CTRL-W CTRL-K                                   </span><span class="String">CTRL-W_CTRL-K</span> <span class="String">CTRL-W_k</span>
+<span class="Special">CTRL-W</span> k        把光标向上移动 <span class="Special">N</span> 个窗口。用光标的位置在若干窗口之间做出选择。
+
+<span class="Special">CTRL-W</span> <span class="Special">&lt;Left&gt;</span>                                   <span class="String">CTRL-W_&lt;Left&gt;</span>
+<span class="Statement">CTRL-W CTRL-H                                   </span><span class="String">CTRL-W_CTRL-H</span>
+<span class="Special">CTRL-W</span> <span class="Special">&lt;BS&gt;</span>                                     <span class="String">CTRL-W_&lt;BS&gt;</span> <span class="String">CTRL-W_h</span>
+<span class="Special">CTRL-W</span> h        把光标向左移动 <span class="Special">N</span> 个窗口。用光标的位置在若干窗口之间做出选择。
+
+<span class="Special">CTRL-W</span> <span class="Special">&lt;Right&gt;</span>                                  <span class="String">CTRL-W_&lt;Right&gt;</span>
+<span class="Statement">CTRL-W CTRL-L                                   </span><span class="String">CTRL-W_CTRL-L</span> <span class="String">CTRL-W_l</span>
+<span class="Special">CTRL-W</span> l        把光标向右移动 <span class="Special">N</span> 个窗口。用光标的位置在若干窗口之间做出选择。
+
+<span class="Special">CTRL-W</span> w                                        <span class="String">CTRL-W_w</span> <span class="String">CTRL-W_CTRL-W</span>
+<span class="Special">CTRL-W</span> <span class="Special">CTRL-W</span>   如果没有添加计数，则将光标移动到当前窗口的右/下方的窗口。如果
+                右/下方没有窗口，就移动到左上角的窗口。
+                要是添加了计数，就移动到第 <span class="Special">N</span> 个窗口 (从左上方到右下方依次计
+                数)。窗口号可以通过 <span class="Identifier">bufwinnr()</span> 和 <span class="Identifier">winnr()</span> 来获得。如果 <span class="Special">N</span>
+                大于窗口总数，跳到最后一个窗口。
+
+                                                <span class="String">CTRL-W_W</span>
+<span class="Special">CTRL-W</span> W        如果没有添加计数，则将光标移动到当前窗口的左/上方的窗口。如
+                果左/上方没有窗口，就移动到右下角的窗口。
+                要是添加了计数，就移动到第 <span class="Special">N</span> 个窗口，类似于 <span class="Special">CTRL-W</span> w。
+
+<span class="Special">CTRL-W</span> t                                        <span class="String">CTRL-W_t</span> <span class="String">CTRL-W_CTRL-T</span>
+<span class="Special">CTRL-W</span> <span class="Special">CTRL-T</span>   把光标移动到左上角的窗口。
+
+<span class="Special">CTRL-W</span> b                                        <span class="String">CTRL-W_b</span> <span class="String">CTRL-W_CTRL-B</span>
+<span class="Special">CTRL-W</span> <span class="Special">CTRL-B</span>   把光标移动到右下角的窗口。
+
+<span class="Special">CTRL-W</span> p                                        <span class="String">CTRL-W_p</span> <span class="String">CTRL-W_CTRL-P</span>
+<span class="Special">CTRL-W</span> <span class="Special">CTRL-P</span>   移动到前一个 (previous) (上次访问的) 窗口。
+
+                                                <span class="String">CTRL-W_P</span> <span class="String">E441</span>
+<span class="Special">CTRL-W</span> P        移动到预览窗口。如果没有预览窗口就会出错。
+                <span class="Special">{仅当编译时加入 </span><span class="Identifier">+quickfix</span><span class="Special"> 特性才有效}</span>
+
+在可视模式下，如果新窗口编辑的是同一个缓冲区，则设置光标位置使得相同的区域被选
+择。如果不是同一个缓冲区，则终止可视模式。
+
+                                                <span class="String">:winc</span> <span class="String">:wincmd</span>
+这些命令也可以用 &quot;:wincmd&quot; 来执行：
+
+:<span class="Special">[count]</span>winc[md] <span class="Special">{arg}</span>
+                与 <span class="Special">CTRL-W</span> <span class="Special">[count]</span> <span class="Special">{arg}</span> 相同。例如：<span class="Ignore"> &gt;</span>
+<span class="Comment">                        :wincmd j</span>
+<span class="Ignore">&lt;</span>               把光标移动到当前窗口下面的窗口。
+                这个命令在普通模式不可用的时候 (比如在 <span class="Identifier">CursorHold</span> 自动命令执
+                行的时候)，或者在启用普通模式不方便时，特别好用。
+                计数也可以是一个窗口号。例如:<span class="Ignore"> &gt;</span>
+<span class="Comment">                        :exe nr . &quot;wincmd w&quot;</span>
+<span class="Ignore">&lt;</span>               这会切换到窗口 &quot;nr&quot;。
+
+<span class="PreProc">==============================================================================</span>
+5. 移动窗口                                             <span class="String">window-moving</span>
+
+<span class="Special">CTRL-W</span> r                                <span class="String">CTRL-W_r</span> <span class="String">CTRL-W_CTRL-R</span> <span class="String">E443</span>
+<span class="Special">CTRL-W</span> <span class="Special">CTRL-R</span>   向右/下方向旋转窗口。第一个窗口变成第二个，第二个变成第三个……
+                最后一个变成第一个。光标保留在相同窗口里。
+                本操作只在和当前窗口同行或同列的窗口间移动。
+
+                                                <span class="String">CTRL-W_R</span>
+<span class="Special">CTRL-W</span> R        向左/上方向旋转窗口。第二个窗口变成第一个，第三个变成第二个……
+                第一个变成最后一个。光标保留在相同窗口里。
+                本操作只在和当前窗口同行或同列的窗口间移动。
+
+<span class="Special">CTRL-W</span> x                                        <span class="String">CTRL-W_x</span> <span class="String">CTRL-W_CTRL-X</span>
+<span class="Special">CTRL-W</span> <span class="Special">CTRL-X</span>   若没有计数：交换当前窗口与下一个窗口。如果没有下一个窗口，则
+                与前一个窗口交换。
+                若有计数：交换当前窗口与第 <span class="Special">N</span> 个窗口 (第一个窗口为 1)。光标被放
+                置在那个窗口里。
+                如果既有垂直分割又有水平分割，那么只能与当前窗口同行或者同列的
+                窗口进行交换。
+
+下面的几个命令可以被用来改变窗口的布局。例如，<span class="Special">CTRL-W</span> K 可以把两个垂直分割的窗
+口变成水平分割的窗口。<span class="Special">CTRL-W</span> H 则正好相反。
+
+                                                <span class="String">CTRL-W_K</span>
+<span class="Special">CTRL-W</span> K        把当前窗口放到最顶端，并且是最大宽度。这很像在关闭当前窗口之
+                后，再用 &quot;:topleft split&quot; 打开一个新的窗口，不过新窗口会包含当
+                前窗口的内容。
+
+                                                <span class="String">CTRL-W_J</span>
+<span class="Special">CTRL-W</span> J        把当前窗口放到最底部，并且是最大宽度。这很像在关闭当前窗口之
+                后，再用 &quot;:botright split&quot; 打开一个新的窗口，不过新窗口会包含
+                当前窗口的内容。
+
+                                                <span class="String">CTRL-W_H</span>
+<span class="Special">CTRL-W</span> H        把当前窗口放到最左边，并且是最大高度。这很像在关闭当前窗口之
+                后，再用 &quot;:vert topleft split&quot; 打开一个新的窗口，不过新窗口会
+                包含当前窗口的内容。
+                <span class="Special">{仅当编译时加入 </span><span class="Identifier">+vertsplit</span><span class="Special"> 特性才有效}</span>
+
+                                                <span class="String">CTRL-W_L</span>
+<span class="Special">CTRL-W</span> L        把当前窗口放到最右边，并且是最大高度。这很像在关闭当前窗口之
+                后，再用 &quot;:vert botright split&quot; 打开一个新的窗口，不过新窗口会
+                包含当前窗口的内容。
+                <span class="Special">{仅当编译时加入 </span><span class="Identifier">+vertsplit</span><span class="Special"> 特性才有效}</span>
+
+                                                <span class="String">CTRL-W_T</span>
+<span class="Special">CTRL-W</span> T        把当前窗口移到一个新的标签页上。如果当前标签页只有一个窗口，此
+                命令失败。
+                如果给出计数，打开的新标签页会出现在该索引给出的标签页之前。否
+                则，它出现在当前标签页之后。
+
+<span class="PreProc">==============================================================================</span>
+6. 改变窗口大小                                         <span class="String">window-resize</span>
+
+                                                <span class="String">CTRL-W_=</span>
+<span class="Special">CTRL-W</span> =        使得所有窗口 (几乎) 等宽、等高，但当前窗口使用 <span class="Type">'winheight'</span> 和
+                <span class="Type">'winwidth'</span>。
+                置位 <span class="Type">'winfixheight'</span> 的窗口保持它们的高度，而置位 <span class="Type">'winfixwidth'</span>
+                的窗口保持它们的宽度。
+
+:res[ize] -N                                    <span class="String">:res</span> <span class="String">:resize</span> <span class="String">CTRL-W_-</span>
+<span class="Special">CTRL-W</span> -        使得当前窗口高度减 <span class="Special">N</span> (默认值是 1)。
+                如果在 <span class="Identifier">'vertical'</span> 之后使用，则使得宽度减 <span class="Special">N</span>。
+
+:res[ize] +N                                    <span class="String">CTRL-W_+</span>
+<span class="Special">CTRL-W</span> +        使得当前窗口高度加 <span class="Special">N</span> (默认值是 1)。
+                如果在 <span class="Identifier">'vertical'</span> 之后使用，则使得宽度加 <span class="Special">N</span>。
+
+:res[ize] <span class="Special">[N]</span>
+<span class="Special">CTRL-W</span> <span class="Special">CTRL-_</span>                                   <span class="String">CTRL-W_CTRL-_</span> <span class="String">CTRL-W__</span>
+<span class="Special">CTRL-W</span> _        设置当前窗口的高度为 <span class="Special">N</span> (默认值为最大可能高度)。
+
+z<span class="Special">{nr}&lt;CR&gt;</span>       设置当前窗口的高度为 <span class="Special">{nr}</span>。
+
+                                                <span class="String">CTRL-W_&lt;</span>
+<span class="Special">CTRL-W</span> &lt;        使得当前窗口宽度减 <span class="Special">N</span> (默认值是 1)。
+
+                                                <span class="String">CTRL-W_&gt;</span>
+<span class="Special">CTRL-W</span> &gt;        使得当前窗口宽度加 <span class="Special">N</span> (默认值是 1)。
+
+:vertical res[ize] <span class="Special">[N]</span>                  <span class="String">:vertical-resize</span> <span class="String">CTRL-W_bar</span>
+<span class="Special">CTRL-W</span> |        设置当前窗口的宽度为 <span class="Special">N</span> (默认值为最大可能宽度)。
+
+你也可以用鼠标上下拖动状态行来改变窗口的高度，或者左右拖动垂直分割线来改变窗口
+宽度。这些功能只有在支持鼠标的版本里，并且设置了 <span class="Type">'mouse'</span> 选项才可以用。
+
+选项 <span class="Type">'winheight'</span> (<span class="Type">'wh'</span>) 用来设置当前窗口的最小高度。每当其它窗口变为当前窗口的
+时候，这一选项就会生效。如果设置为 0，则禁用。把 <span class="Type">'winheight'</span> 设一个很大的值，
+例如，'9999'，就使得当前窗口永远占据尽可能大的空间。尽量设置成一个编辑时比较舒
+服的值，比如说，'10' 就是一个合理的值。
+
+同样，<span class="Type">'winwidth'</span> (<span class="Type">'wiw'</span>) 选项设定了当前窗口的最小宽度。
+
+如果置位了 <span class="Type">'equalalways'</span> (<span class="Type">'ea'</span>) 选项，在分割或者关闭窗口之后，所有窗口都会变为
+相同大小。如果你不置位这个选项，分割窗口时会减少当前窗口的大小，而其它窗口保持
+不变。当关闭窗口时，多出来的行会被上面的窗口占用。
+
+选项 <span class="Type">'eadirection'</span> 用来限制 <span class="Type">'equalalways'</span> 的作用方向。默认值是 &quot;both&quot;，两个方
+向都改变。当设置为 &quot;ver&quot; 时，只限制所有窗口的高度必须相同，这样你可以自己调节
+窗口的宽度。而垂直分割窗口的大小如果经过手工调整，其宽度也不会被破坏。同样，
+&quot;hor&quot; 使得窗口的宽度都相等。
+
+选项 <span class="Type">'cmdheight'</span> (<span class="Type">'ch'</span>) 用来设置命令行的高度。如果你对 <span class="Identifier">hit-enter</span> 的提示信息
+感到厌烦，可以将它设置为 2 或 3。
+
+如果只有一个窗口，那么改变该窗口大小的同时也会改变命令行的高度。如果有多个窗
+口，那么改变当前窗口的大小也会改变它下面的窗口 (有时是上面的窗口) 的高度。
+
+一个窗口的最小高度和最小宽度可以用 <span class="Type">'winminheight'</span> 和 <span class="Type">'winminwidth'</span> 设定。这是
+硬性值，一旦设定，窗口的高度 (或宽度) 将不能小于该值。
+
+<span class="PreProc">==============================================================================</span>
+7. 参数和缓冲区列表的命令                               <span class="String">buffer-list</span>
+
+      <span class="PreProc">参数列表                缓冲区列表           含义</span>
+1. :<span class="Special">[N]</span>argument <span class="Special">[N]</span>     11. :<span class="Special">[N]</span>buffer <span class="Special">[N]</span>      切换至第 <span class="Special">N</span> 号参数/缓冲区
+2. :<span class="Special">[N]</span>next [file ..]   12. :<span class="Special">[N]</span>bnext <span class="Special">[N]</span>       切换至向后第 <span class="Special">N</span> 个参数/缓冲区
+3. :<span class="Special">[N]</span>Next <span class="Special">[N]</span>         13. :<span class="Special">[N]</span>bNext <span class="Special">[N]</span>       切换至向前第 <span class="Special">N</span> 个参数/缓冲区
+4. :<span class="Special">[N]</span>previous <span class="Special">[N]</span>     14. :<span class="Special">[N]</span>bprevious <span class="Special">[N]</span>   切换至向前第 <span class="Special">N</span> 个参数/缓冲区
+5. :rewind / :first     15. :brewind / :bfirst  切换至第一个参数/缓冲区
+6. :last                16. :blast              切换至最后一个参数/缓冲区
+7. :all                 17. :ball               编辑所有的参数/缓冲区
+                        18. :unhide             编辑所有已载入的缓冲区
+                        19. :<span class="Special">[N]</span>bmod <span class="Special">[N]</span>        切换至第 <span class="Special">N</span> 个已修改的缓冲区
+
+  <span class="PreProc">分割 &amp; 参数列表        分割 &amp; 缓冲区列表         含义</span>
+21. :<span class="Special">[N]</span>sargument <span class="Special">[N]</span>   31. :<span class="Special">[N]</span>sbuffer <span class="Special">[N]</span>     分割并至第 <span class="Special">N</span> 号参数/缓冲区
+22. :<span class="Special">[N]</span>snext [file ..] 32. :<span class="Special">[N]</span>sbnext <span class="Special">[N]</span>      分割并至向后第 <span class="Special">N</span> 个参数/缓冲区
+23. :<span class="Special">[N]</span>sNext <span class="Special">[N]</span>       33. :<span class="Special">[N]</span>sbNext <span class="Special">[N]</span>      分割并至向前第 <span class="Special">N</span> 个参数/缓冲区
+24. :<span class="Special">[N]</span>sprevious <span class="Special">[N]</span>   34. :<span class="Special">[N]</span>sbprevious <span class="Special">[N]</span>  分割并至向前第 <span class="Special">N</span> 个参数/缓冲区
+25. :srewind / :sfirst  35. :sbrewind / :sbfirst 分割并至第一个参数/缓冲区
+26. :slast              36. :sblast             分割并至最后一个参数/缓冲区
+27. :sall               37: :sball              编辑所有的参数/缓冲区
+                        38. :sunhide            编辑所有已载入的缓冲区
+                        39. :<span class="Special">[N]</span>sbmod <span class="Special">[N]</span>       分割并至第 <span class="Special">N</span> 个已修改的缓冲区
+
+40. :args               显示参数列表
+41. :buffers            显示缓冲区列表
+
+上述命令中的 <span class="Special">[N]</span> 的含义取决于你使用的命令：
+ <span class="Special">[N]</span> 在命令 ?2、?3 和 ?4 中是向前/向后的缓冲区个数。
+ <span class="Special">[N]</span> 在命令 1 和 21      中是参数号，默认值是当前参数。
+ <span class="Special">[N]</span> 在命令 11 和 31     中是缓冲区号，默认值是当前缓冲区。
+ <span class="Special">[N]</span> 在命令 19 和 39     中是计数。
+
+<span class="Todo">备注</span>: &quot;:next&quot; 是一个例外，因为它必须以文件名列表为参数，这是为了和 Vi 兼容。
+
+
+参数列表和多窗口
+<span class="PreProc">--------------------------------------</span>
+
+每一个窗口所编辑的文件可能位于参数列表的不同位置。记住！用 &quot;:e file&quot; 编辑文件
+后，你在参数列表中的位置没有变化，但你并不是在编辑处于那个位置的文件。为了说明
+这一点，文件消息 (和标题栏，如果有的话) 会显示 &quot;(file (N) of M)&quot;，&quot;(N)&quot; 是当前
+文件在列表中的位置，&quot;M&quot; 是列表中文件的数量。
+
+所有参数列表中的条目都被加载到缓冲区列表中，这样你也可以用缓冲区列表的命令进行
+操作，比如 &quot;:bnext&quot;。
+
+:<span class="Special">[N]</span>al[l][!] <span class="Special">[N]</span>                                <span class="String">:al</span> <span class="String">:all</span> <span class="String">:sal</span> <span class="String">:sall</span>
+:<span class="Special">[N]</span>sal[l][!] <span class="Special">[N]</span>
+                重新整理屏幕，为每一个参数打开一个窗口。其它窗口统统关闭。如果
+                使用了计数，则其数值为窗口数目的最大值。
+                如果带 <span class="Identifier">:tab</span> 修饰符，为每个参数打开一个标签页。如果参数数目多
+                于 <span class="Type">'tabpagemax'</span>，多余参数成为最后一个标签页的分割窗口。
+                如果设置了 <span class="Type">'hidden'</span>，所有要关闭的窗口变为隐藏。
+                如果没有设置 <span class="Type">'hidden'</span>，但是设置了 <span class="Type">'autowrite'</span>，那么所有改动
+                的缓冲区被写入文件。否则，包含更改过的缓冲区的窗口不会被删除，
+                除非你用 [!] 使它们隐藏。更改过的缓冲区永远不会被丢弃，所以改
+                动不会丢失。
+                <span class="Special">[N]</span> 是最大可以打开的窗口数。<span class="Type">'winheight'</span> 也限制打开的窗口数。
+                (如果前加了 <span class="Identifier">:vertical</span> 的话 <span class="Type">'winwidth'</span>)。
+                Buf/Win Enter/Leave 自动命令不会被这里的新窗口执行，只有在它
+                们真正进入时才会执行。
+
+:<span class="Special">[N]</span>sa[rgument][!] <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span> <span class="Special">[N]</span>                   <span class="String">:sa</span> <span class="String">:sargument</span>
+                这是 &quot;:split | argument <span class="Special">[N]</span>&quot; 命令的简写。分割窗口并切换至第 <span class="Special">N</span>
+                号参数。但是如果该参数不存在，窗口不会分割。参见 <span class="Identifier">++opt</span> 和
+                <span class="Identifier">+cmd</span>。
+
+:<span class="Special">[N]</span>sn[ext][!] <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span> [file ..]                 <span class="String">:sn</span> <span class="String">:snext</span>
+                这是 &quot;:split | <span class="Special">[N]</span>next&quot; 命令的简写。分割窗口并切换到向后第 <span class="Special">N</span>
+                个参数。但是如果该参数不存在，窗口不会分割。参见 <span class="Identifier">++opt</span> 和
+                <span class="Identifier">+cmd</span>。
+
+:<span class="Special">[N]</span>spr[evious][!] <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span> <span class="Special">[N]</span>                   <span class="String">:spr</span> <span class="String">:sprevious</span>
+:<span class="Special">[N]</span>sN[ext][!] <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span> <span class="Special">[N]</span>                       <span class="String">:sN</span> <span class="String">:sNext</span>
+                这是 &quot;:split | <span class="Special">[N]</span>Next&quot; 命令的简写。分割窗口并切换到向前第 <span class="Special">N</span>
+                个参数。但是如果该参数不存在，窗口不会分割。参见 <span class="Identifier">++opt</span> 和
+                <span class="Identifier">+cmd</span>。
+
+                                                <span class="String">:sre</span> <span class="String">:srewind</span>
+:sre[wind][!] <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span>
+                这是 &quot;:split | rewind&quot; 命令的简写。分割窗口并切换到第一个参
+                数。但是如果没有参数列表，窗口不会分割。参见 <span class="Identifier">++opt</span> 和
+                <span class="Identifier">+cmd</span>。
+
+                                                <span class="String">:sfir</span> <span class="String">:sfirst</span>
+:sfir[st] <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span>
+                与 &quot;:srewind&quot; 相同。
+
+                                                <span class="String">:sla</span> <span class="String">:slast</span>
+:sla[st][!] <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span>
+                这是 &quot;:split | last&quot; 命令的简写。分割窗口并切换到最后一个参
+                数。但是如果没有参数列表，窗口不会分割。参见 <span class="Identifier">++opt</span> 和
+                <span class="Identifier">+cmd</span>。
+                                                <span class="String">:dr</span> <span class="String">:drop</span>
+:dr[op] <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span> <span class="Special">{file}</span> ..
+                在一个窗口内编辑第一个 <span class="Special">{file}</span>。
+                － 如果该文件已经被打开，切换至该文件所在窗口。
+                － 如果该文件尚未被打开，在当前窗口内打开该文件。如果当前窗口
+                   无法被放弃 <span class="Identifier">abandon</span>，窗口会先被分割。
+                参数列表 <span class="Identifier">argument-list</span> 会被象使用 <span class="Identifier">:next</span> 命令一样被设定。
+                此命令的目的在于：允许 debugger 之类的程序里让 Vim 编辑另一个
+                文件。
+                如果使用 <span class="Identifier">:tab</span> 修饰符，为每个参数打开一个标签页。如果为空，使
+                用最后一个窗口。
+                另见 <span class="Identifier">++opt</span> 和 <span class="Identifier">+cmd</span>。
+                <span class="Special">{仅当编译时有 GUI 才可用}</span>
+
+<span class="PreProc">==============================================================================</span>
+8. 在所有的缓冲区或窗口里执行命令                               <span class="String">list-repeat</span>
+
+                                                        <span class="String">:windo</span>
+:windo <span class="Special">{cmd}</span>            在每一个窗口里执行 <span class="Special">{cmd}</span>。
+                        这就像是：<span class="Ignore"> &gt;</span>
+<span class="Comment">                                CTRL-W t</span>
+<span class="Comment">                                :{cmd}</span>
+<span class="Comment">                                CTRL-W w</span>
+<span class="Comment">                                :{cmd}</span>
+<span class="Comment">                                等等……</span>
+<span class="Ignore">&lt;</span>                       只在当前标签页进行操作。
+                        如果在一个窗口里检测到错误，余下的窗口不再访问。
+                        最后一个窗口 (或者出错的那个窗口) 成为当前窗口。
+                        <span class="Special">{cmd}</span> 可以包含 '|' 来连接多个命令。
+                        <span class="Special">{cmd}</span> 不能打开或关闭窗口，也不能更换它们的顺序。
+                        <span class="Special">{Vi 无此功能}</span> <span class="Special">{仅在编译时加入 </span><span class="Identifier">+listcmds</span><span class="Special"> 特性才有效}</span>
+                        也参见 <span class="Identifier">:tabdo</span>、<span class="Identifier">:argdo</span> 和 <span class="Identifier">:bufdo</span>。
+
+                                                        <span class="String">:bufdo</span>
+:bufdo[!] <span class="Special">{cmd}</span>         在缓冲区列表的每一个缓冲区里执行 <span class="Special">{cmd}</span>。
+                        就像是：<span class="Ignore"> &gt;</span>
+<span class="Comment">                                :bfirst</span>
+<span class="Comment">                                :{cmd}</span>
+<span class="Comment">                                :bnext</span>
+<span class="Comment">                                :{cmd}</span>
+<span class="Comment">                                等等……</span>
+<span class="Ignore">&lt;</span>                       如果当前文件不能被丢弃 <span class="Identifier">abandon</span>，并且没有使用 [!]，命
+                        令失败。
+                        当在一个缓冲区里检测到错误，剩下的缓冲区不再访问。
+                        跳过列表外缓冲区。
+                        最后一个缓冲区 (或者出错的那个缓冲区) 成为当前缓冲区。
+                        <span class="Special">{cmd}</span> 可以包含 '|' 来连接多个命令。
+                        <span class="Special">{cmd}</span> 不能删除或添加缓冲区到缓冲区列表。
+                        <span class="Todo">备注</span>: 此命令执行时，通过把 Syntax 加入 <span class="Type">'eventignore'</span>
+                        来屏蔽此自动命令事件。这样大大加快了每个缓冲区的编辑速
+                        度。
+                        <span class="Special">{Vi 无此功能}</span> <span class="Special">{仅在编译时加入 </span><span class="Identifier">+listcmds</span><span class="Special"> 特性才有效}</span>
+                        也参见 <span class="Identifier">:tabdo</span>、<span class="Identifier">:argdo</span> 和 <span class="Identifier">:windo</span>。
+
+例子：<span class="Ignore"> &gt;</span>
+
+<span class="Comment">        :windo set nolist nofoldcolumn | normal zn</span>
+
+这个命令会复位 <span class="Type">'list'</span> 选项并在所有的窗口里关闭折叠功能。<span class="Ignore"> &gt;</span>
+
+<span class="Comment">        :bufdo set fileencoding= | update</span>
+
+此命令在每个缓冲区里复位 <span class="Type">'fileencoding'</span> 选项的值，并将改动的缓冲区存盘。结果是
+所有的缓冲区都会用 <span class="Type">'encoding'</span> 编码 (如果能够正确转换的话)。
+
+<span class="PreProc">==============================================================================</span>
+9. 当前光标处的标签和文件名                             <span class="String">window-tag</span>
+
+                                                        <span class="String">:sta</span> <span class="String">:stag</span>
+:sta[g][!] <span class="Special">[tagname]</span>
+                执行 &quot;:tag[!] <span class="Special">[tagname]</span>&quot; 并且分割窗口打开新的标签。参见
+                <span class="Identifier">:tag</span>。
+
+<span class="Special">CTRL-W</span> ]                                        <span class="String">CTRL-W_]</span> <span class="String">CTRL-W_CTRL-]</span>
+<span class="Special">CTRL-W</span> <span class="Special">CTRL-]</span>   把当前窗口一分为二，把光标所在的标识符当作标签，并在上面的新窗
+                口跳转至标签所指向的地方。新窗口的高度为 <span class="Special">N</span>。
+
+                                                        <span class="String">CTRL-W_g]</span>
+<span class="Special">CTRL-W</span> g ]      把当前窗口一分为二，把光标所在的标识符当作标签，并在上面的新窗
+                口里执行 &quot;:tselect&quot;。新窗口的高度为 <span class="Special">N</span>。
+
+                                                        <span class="String">CTRL-W_g_CTRL-]</span>
+<span class="Special">CTRL-W</span> g <span class="Special">CTRL-]</span> 把当前窗口一分为二，把光标所在的标识符当作标签，并在上面的新窗
+                口里执行 &quot;:tjump&quot;。新窗口的高度为 <span class="Special">N</span>。
+
+<span class="Special">CTRL-W</span> f                                        <span class="String">CTRL-W_f</span> <span class="String">CTRL-W_CTRL-F</span>
+<span class="Special">CTRL-W</span> <span class="Special">CTRL-F</span>   把当前窗口一分为二。编辑光标下的文件名。
+                类似 &quot;:split gf&quot;，但是找不到文件或者文件不存在时，不会分割窗
+                口。
+                此操作在 <span class="Type">'path'</span> 变量所定义的目录和当前文件所在的目录里寻找文
+                件。
+                如果是一个类似 &quot;type://machine/path&quot; 的超链接，那么只使用
+                &quot;/path&quot;。
+                如果指定了计数 <span class="Special">N</span>，那么编辑第 <span class="Special">N</span> 个匹配的文件。
+                <span class="Special">{仅在编译时加入 </span><span class="Identifier">+file_in_path</span><span class="Special"> 特性才有效}</span>
+
+<span class="Statement">CTRL-W F                                                </span><span class="String">CTRL-W_F</span>
+                把当前窗口一分为二。编辑光标下的文件名并跳转到文件名之后的行号
+                上。<span class="Identifier">gF</span> 详细说明该行号如何获取。
+                <span class="Special">{仅在编译时加入 </span><span class="Identifier">+file_in_path</span><span class="Special"> 特性才有效}</span>
+
+<span class="Special">CTRL-W</span> gf                                               <span class="String">CTRL-W_gf</span>
+                打开新标签页，并编辑光标下的文件名。类似于 &quot;tab split&quot; 和
+                &quot;gf&quot;，但如果文件不存在，不建立新标签页。
+                <span class="Special">{仅在编译时加入 </span><span class="Identifier">+file_in_path</span><span class="Special"> 特性才有效}</span>
+
+<span class="Special">CTRL-W</span> gF                                               <span class="String">CTRL-W_gF</span>
+                打开新标签页，编辑光标下的文件名，并跳转到文件名之后的行号上。
+                类似于 &quot;tab split&quot; 然后 &quot;gF&quot;，但如果文件不存在，不建立新标签
+                页。
+                <span class="Special">{仅在编译时加入 </span><span class="Identifier">+file_in_path</span><span class="Special"> 特性才有效}</span>
+
+另见 <span class="Identifier">CTRL-W_CTRL-I</span>：为包含当前光标下的关键字的头文件打开窗口。
+
+<span class="PreProc">==============================================================================</span>
+10. 预览窗口                                    <span class="String">preview-window</span>
+
+预览窗口是显示 (预览) 其它文件的特殊窗口。它通常是一个用来查看包含文件或者函数
+定义的小窗口。<span class="Special">{仅当编译时加入 </span><span class="Identifier">+quickfix</span><span class="Special"> 特性才有效}</span>
+
+(每个标签页) 只能有一个预览窗口，可以用如下命令之一创建。另外，<span class="Type">'previewheight'</span>
+选项可以用来指定预览窗口的高度；预览窗口设定 <span class="Type">'previewwindow'</span> 选项以便区分。
+<span class="Type">'winfixheight'</span> 选项也被设定用来保持该窗口的高度，不受其它窗口开关的影响。
+
+                                                <span class="String">:pta</span> <span class="String">:ptag</span>
+:pta[g][!] <span class="Special">[tagname]</span>
+                执行 &quot;:tag[!] <span class="Special">[tagname]</span>&quot; 并且在预览窗口里显示标签所指向的内
+                容，不改变当前缓冲区和光标的位置。如果预览窗口已经打开，则会被
+                重用 (类似于帮助窗口)。新预览窗口的高度由 <span class="Type">'previewheight'</span> 决
+                定。另见 <span class="Identifier">:tag</span>。
+                参考下面的例子。<span class="Identifier">CursorHold-example</span>
+                与 <span class="Identifier">:tag</span> 有细小的差别: 当 <span class="Special">[tagname]</span> 与当前显示的标签相同时，
+                该命令不会重新设置标签匹配表的当前位置。这使 <span class="Identifier">:ptnext</span> 执行完
+                后，<span class="Identifier">CursorHold-example</span> 仍可以运行。
+
+<span class="Special">CTRL-W</span> z                                <span class="String">CTRL-W_z</span>
+<span class="Statement">CTRL-W CTRL-Z                           </span><span class="String">CTRL-W_CTRL-Z</span> <span class="String">:pc</span> <span class="String">:pclose</span>
+:pc[lose][!]    关闭当前打开的预览窗口。如果置位了 <span class="Type">'hidden'</span>，或者更改了缓冲区
+                并且使用了 [!]，则缓冲区变为隐藏 (除非还有其它窗口正在编辑该
+                缓冲区)。如果预览窗口的缓冲区不能关闭，此命令失败。也参见
+                <span class="Identifier">:close</span>。
+
+                                                        <span class="String">:pp</span> <span class="String">:ppop</span>
+:<span class="Special">[count]</span>pp[op][!]
+                在预览窗口执行 &quot;:<span class="Special">[count]</span>pop[!]&quot;。参见 <span class="Identifier">:pop</span> 和 <span class="Identifier">:ptag</span>。
+                <span class="Special">{Vi 无此功能}</span>
+
+<span class="Special">CTRL-W</span> }                                                <span class="String">CTRL-W_}</span>
+                使用当前光标所处位置的标识符作为标签，执行 :ptag。生成预览窗口
+                (如果需要的话)，窗口的高度为 <span class="Special">N</span>，如果没指定高度，就使用
+                <span class="Type">'previewheight'</span> 的值。
+
+<span class="Special">CTRL-W</span> g }                                              <span class="String">CTRL-W_g}</span>
+                使用当前光标所处位置的标识符作为标签，执行 :ptjump。生成预览窗
+                口 (如果需要的话)，窗口的高度为 <span class="Special">N</span>，如果没指定高度，就使用
+                <span class="Type">'previewheight'</span> 的值。
+
+                                                        <span class="String">:ped</span> <span class="String">:pedit</span>
+:ped[it][!] <span class="Special">[++opt]</span> <span class="Special">[+cmd]</span> <span class="Special">{file}</span>
+                在预览窗口里编辑文件 <span class="Special">{file}</span>。预览窗口打开的方式和 <span class="Identifier">:ptag</span> 类
+                似。当前窗口和光标的位置都不改变。可用实例：<span class="Ignore"> &gt;</span>
+<span class="Comment">                        :pedit +/fputc /usr/include/stdio.h</span>
+<span class="Ignore">&lt;</span>
+                                                        <span class="String">:ps</span> <span class="String">:psearch</span>
+:<span class="Special">[range]</span>ps[earch][!] <span class="Special">[count]</span> [/]pattern[/]
+                与 <span class="Identifier">:ijump</span> 命令很像，只是找到的匹配在预览窗口显示。预览窗口用
+                <span class="Identifier">:ptag</span> 打开。当前窗口和光标的位置都不改变。有用的例子：<span class="Ignore"> &gt;</span>
+<span class="Comment">                        :psearch popen</span>
+<span class="Ignore">&lt;</span>               这很像 <span class="Identifier">:ptag</span> 命令，你可以用它自动显示光标所在单词的相关信
+                息。这个命令虽然不如 <span class="Identifier">:ptag</span> 强大，但是你可以不使用标签文件，
+                而同样可以找到系统的头文件。例如：<span class="Ignore"> &gt;</span>
+<span class="Comment">  :au! CursorHold *.[ch] nested exe &quot;silent! psearch &quot; . expand(&quot;&lt;cword&gt;&quot;)</span>
+<span class="Ignore">&lt;</span>               警告：可能会很慢。
+
+例子                                            <span class="String">CursorHold-example</span> <span class="Ignore"> &gt;</span>
+
+<span class="Comment">  :au! CursorHold *.[ch] nested exe &quot;silent! ptag &quot; . expand(&quot;&lt;cword&gt;&quot;)</span>
+
+如果光标停留达到至少 <span class="Type">'updatetime'</span> 指定的时间，这条命令以当前光标位置处的关键字
+为参数，执行 &quot;:ptag&quot; 命令。&quot;nested&quot; 使得其它自动命令得以执行，这样可以在预览窗
+口里启用语法高亮。&quot;silent!&quot; 屏蔽了在找不到标签时产生的错误信息。也参见
+<span class="Identifier">CursorHold</span>。要禁用此功能：<span class="Ignore"> &gt;</span>
+
+<span class="Comment">  :au! CursorHold</span>
+
+更好的改进是能高亮找到的标签，光标处没有单词时不执行 &quot;:ptag&quot;，还能处理一些其它
+细节，见下：<span class="Ignore"> &gt;</span>
+
+<span class="Comment">  :au! CursorHold *.[ch] nested call PreviewWord()</span>
+<span class="Comment">  :func PreviewWord()</span>
+<span class="Comment">  :  if &amp;previewwindow                  &quot; 不要在预览窗口里执行</span>
+<span class="Comment">  :    return</span>
+<span class="Comment">  :  endif</span>
+<span class="Comment">  :  let w = expand(&quot;&lt;cword&gt;&quot;)          &quot; 在当前光标位置抓词</span>
+<span class="Comment">  :  if w =~ '\a'                       &quot; 如果该单词包括一个字母</span>
+<span class="Comment">  :</span>
+<span class="Comment">  :    &quot; 在显示下一个标签之前，删除所有现存的语法高亮</span>
+<span class="Comment">  :    silent! wincmd P                 &quot; 跳转至预览窗口</span>
+<span class="Comment">  :    if &amp;previewwindow                &quot; 如果确实转到了预览窗口……</span>
+<span class="Comment">  :      match none                     &quot; 删除语法高亮</span>
+<span class="Comment">  :      wincmd p                       &quot; 回到原来的窗口</span>
+<span class="Comment">  :    endif</span>
+<span class="Comment">  :</span>
+<span class="Comment">  :    &quot; 试着显示当前光标处匹配的标签</span>
+<span class="Comment">  :    try</span>
+<span class="Comment">  :       exe &quot;ptag &quot; . w</span>
+<span class="Comment">  :    catch</span>
+<span class="Comment">  :      return</span>
+<span class="Comment">  :    endtry</span>
+<span class="Comment">  :</span>
+<span class="Comment">  :    silent! wincmd P                 &quot; 跳转至预览窗口</span>
+<span class="Comment">  :    if &amp;previewwindow                &quot; 如果确实转到了预览窗口……</span>
+<span class="Comment">  :      if has(&quot;folding&quot;)</span>
+<span class="Comment">  :        silent! .foldopen            &quot; 展开折叠的行</span>
+<span class="Comment">  :      endif</span>
+<span class="Comment">  :      call search(&quot;$&quot;, &quot;b&quot;)          &quot; 到前一行的行尾</span>
+<span class="Comment">  :      let w = substitute(w, '\\', '\\\\', &quot;&quot;)</span>
+<span class="Comment">  :      call search('\&lt;\V' . w . '\&gt;') &quot; 定位光标在匹配的单词上</span>
+<span class="Comment">  :      &quot; 给在此位置的单词加上匹配高亮</span>
+<span class="Comment">  :      hi previewWord term=bold ctermbg=green guibg=green</span>
+<span class="Comment">  :      exe 'match previewWord &quot;\%' . line(&quot;.&quot;) . 'l\%' . col(&quot;.&quot;) . 'c\k*&quot;'</span>
+<span class="Comment">  :      wincmd p                       &quot; 返回原来的窗口</span>
+<span class="Comment">  :    endif</span>
+<span class="Comment">  :  endif</span>
+<span class="Comment">  :endfun</span>
+
+<span class="PreProc">==============================================================================</span>
+11. 使用隐藏缓冲区                                      <span class="String">buffer-hidden</span>
+
+隐藏的缓冲区不会在窗口里显示，但仍然载入内存，这使得 Vim 可以在文件间切换，而
+无需每次在一个窗口里读入另一个缓冲区时读写文件。
+<span class="Special">{仅当编译时加入 </span><span class="Identifier">+listcmds</span><span class="Special"> 特性才有效}</span>
+
+                                                        <span class="String">:buffer-!</span>
+如果置位了 <span class="Type">'hidden'</span> (<span class="Type">'hid'</span>) 选项，&quot;:edit&quot;、&quot;:next&quot;、&quot;:tag&quot; 等编辑其它文件的命
+令会保留被丢弃的缓冲区。有时虽然没有置位 <span class="Type">'hidden'</span>，一些在缓冲区列表中穿梭的命
+令还是会把当前窗口变为隐藏。这种情况发生在：你试图用 '!' 从窗口里强制删除修改
+过的缓冲区。但 <span class="Type">'autowrite'</span> 选项关闭或者缓冲区无法写回，
+
+你可以用任何启动编辑的命令使隐藏的缓冲区不再隐藏。或者用 &quot;:bdelete&quot; 命令将其删
+除。
+
+<span class="Type">'hidden'</span> 是全局选项，它作用于所有的缓冲区。<span class="Type">'bufhidden'</span> 选项可以作用于指定的缓
+冲区，该选项可以是下面的值：
+
+        <span class="Special">&lt;empty&gt;</span>         使用全局 <span class="Type">'hidden'</span> 的值。
+        hide            隐藏该缓冲区，<span class="Type">'hidden'</span> 没有置位也是如此。
+        unload          不隐藏，而是卸载该缓冲区，<span class="Type">'hidden'</span> 置位也是如此。
+        delete          删除该缓冲区。
+
+                                                        <span class="String">hidden-quit</span>
+如果存在一个隐藏且修改过的缓冲区，退出 Vim 会得到一条错误信息，并且 Vim 会把该
+缓冲区变为当前的缓冲区。你可以决定是保存 (&quot;:wq&quot;) 还是退出 ( &quot;:q!&quot;)。<span class="Todo">注意</span>：可
+能不止一个这样的缓冲区！
+
+缓冲区也可能是列表外的 (unlisted)，这意味着此缓冲区存在，但是从缓冲区列表中看
+不到。<span class="Identifier">unlisted-buffer</span>
+
+
+:files[!]                                       <span class="String">:files</span>
+:buffers[!]                                     <span class="String">:buffers</span> <span class="String">:ls</span>
+:ls[!]          显示所有缓冲区。例如：
+
+                        <span class="PreProc">1 #h  &quot;/test/text&quot;              line 1</span>
+                        <span class="PreProc">2u    &quot;asdf&quot;                    line 0</span>
+                        <span class="PreProc">3 %a+ &quot;version.c&quot;               line 1</span>
+
+                如果使用了 [!]，将显示所有的缓冲区，包括列表外缓冲区
+                (此时，&quot;列表外&quot; (unlisted) 这一术语多少有点儿别扭……)。
+
+                每一个缓冲区都有唯一的号码与之对应。这个编号是不会改变的，所以
+                你可以一直使用 &quot;:buffer <span class="Special">N</span>&quot; 或 &quot;<span class="Special">N</span> <span class="Special">CTRL-^</span>&quot; (<span class="Special">N</span> 是缓冲区编号) 来选
+                择特定的缓冲区。
+
+                标识符号 (同一列上的符号不可能同时出现)：
+                u       列表外缓冲区 (只有使用 [!] 才能看到) <span class="Identifier">unlisted-buffer</span>
+                 %      当前窗口里的缓冲区
+                 #      用 &quot;:e #&quot; 或 <span class="Special">CTRL-^</span> 可切换到的轮换缓冲区
+                  a     激活缓冲区：已载入内存并且可见
+                  h     隐藏缓冲区：已载入内存但是没有窗口显示它
+                        <span class="Identifier">hidden-buffer</span>
+                   -    不可更改的缓冲区，选项 <span class="Type">'modifiable'</span> 被关闭。
+                   =    只读缓冲区
+                    +   已经更改的缓冲区
+                    x   有读错误的缓冲区
+
+                                                <span class="String">:bad</span> <span class="String">:badd</span>
+:bad[d] [+lnum] <span class="Special">{fname}</span>
+                在缓冲区列表里添加文件名 <span class="Special">{fname}</span>，但是不把该文件载入内存。
+                如果指定了 &quot;lnum&quot;，那么第一次进入缓冲区时，光标会停留在那一
+                行。<span class="Todo">注意</span> 其它 + 后面的命令将被忽略。
+
+:<span class="Special">[N]</span>bd[elete][!]                        <span class="String">:bd</span> <span class="String">:bdel</span> <span class="String">:bdelete</span> <span class="String">E516</span>
+:bd[elete][!] <span class="Special">[N]</span>
+                卸载缓冲区 <span class="Special">[N]</span> (默认：当前缓冲区) 并且从缓冲区列表里删除该缓冲
+                区。如果缓冲区被改动过，那么该命令将失败，除非使用 [!]，但是这
+                样所有的改动都会丢失，文件不受影响。该缓冲区的所有窗口都会关
+                闭。如果缓冲区 <span class="Special">[N]</span> 是当前的缓冲区，那么 Vim 会显示另一个缓冲区
+                来代替。具体来说，Vim 会选择跳转表里最新且已经载入的缓冲区。
+                实际上，该缓冲区还没有被完全删除，但是缓冲区列表把它除名
+                <span class="Identifier">unlisted-buffer</span>，而且该缓冲区中选项的值、变量、映射和缩写被
+                清空。
+
+:bdelete[!] <span class="Special">{bufname}</span>                                           <span class="String">E93</span> <span class="String">E94</span>
+                类似 &quot;:bdelete[!] <span class="Special">[N]</span>&quot;，但是使用名字指定缓冲区。
+                <span class="Todo">注意</span> 如果缓冲区名字是一个数字，不能使用名字来访问；而应用其编
+                号代替。如果名字里含有空格，在空格前插入反斜杠。
+
+:bdelete[!] N1 N2 ...
+                对缓冲区 N1、N2、…… 执行 &quot;:bdelete[!]&quot;。参数可以是缓冲区名或号
+                (但不能是本身为数字的缓冲区名)。如果名字里含有空格，在空格前插
+                入反斜杠。
+
+:N,Mbdelete[!]  对 <span class="Special">N</span> 到 M 号 (包含 <span class="Special">N</span> 和 M <span class="Identifier">inclusive</span>) 缓冲区执行
+                &quot;:bdelete[!]&quot;。
+
+:<span class="Special">[N]</span>bw[ipeout][!]                       <span class="String">:bw</span> <span class="String">:bwipe</span> <span class="String">:bwipeout</span> <span class="String">E517</span>
+:bw[ipeout][!] <span class="Special">{bufname}</span>
+:N,Mbw[ipeout][!]
+:bw[ipeout][!] N1 N2 ...
+                类似 &quot;:bdelete&quot;，但真正删除缓冲区。所有和缓冲区相关的信息都丢
+                失了。所有位置标记失效，选项丢失，诸如此类。除非你确切地知道自
+                己正在做什么，否则不要使用这个命令。
+
+:<span class="Special">[N]</span>bun[load][!]                                <span class="String">:bun</span> <span class="String">:bunload</span> <span class="String">E515</span>
+:bun[load][!] <span class="Special">[N]</span>
+                卸载缓冲区 <span class="Special">[N]</span> (默认：当前缓冲区)。原来占用的内存将被释放。该
+                缓冲区还保留在缓冲区列表里。
+                如果缓冲区被改动过，那么该命令将失败，除非使用 [!]，但是这样所
+                有的改动都会丢失。
+                该缓冲区的所有窗口都会关闭。如果缓冲区 <span class="Special">[N]</span> 是当前的缓冲区，那
+                么 Vim 会显示另一个缓冲区来代替。具体来说，Vim 会选择跳转表里
+                最新且已经载入的缓冲区。
+
+:bunload[!] <span class="Special">{bufname}</span>
+                类似 &quot;:bunload[!] <span class="Special">[N]</span>&quot;，但是使用名字指定缓冲区。
+                <span class="Todo">注意</span> 如果缓冲区名字是一个数字，不能使用名字来访问；而应用其编
+                号代替。如果名字里含有空格，在空格前插入反斜杠。
+
+:N,Mbunload[!]  对 <span class="Special">N</span> 到 M 号 (包含 <span class="Special">N</span> 和 M <span class="Identifier">inclusive</span>) 缓冲区执行
+                &quot;:bunload[!]&quot; 。
+
+:bunload[!] N1 N2 ...
+                对缓冲区 N1、N2、…… 执行 &quot;:bunload[!]&quot;。参数可以是缓冲区名或号
+                (但不能是本身为数字的缓冲区名)。如果名字里含有空格，在空格前插
+                入反斜杠。
+
+:<span class="Special">[N]</span>b[uffer][!] <span class="Special">[N]</span>                     <span class="String">:b</span> <span class="String">:bu</span> <span class="String">:buf</span> <span class="String">:buffer</span> <span class="String">E86</span>
+                编辑缓冲区列表中第 <span class="Special">[N]</span> 个缓冲区，如果没指定 <span class="Special">[N]</span>，就编辑当前的
+                缓冲区。关于 [!] 参见 <span class="Identifier">:buffer-!</span>。这个命令同样可以编辑不在列
+                表里的缓冲区，<span class="Type">'buflisted'</span> 不会因而被置位。
+
+:<span class="Special">[N]</span>b[uffer][!] <span class="Special">{bufname}</span>
+                编辑缓冲区列表中 <span class="Special">{bufname}</span> 对应的缓冲区。关于 [!] 参见
+                <span class="Identifier">:buffer-!</span>。这个命令同样可以编辑不在列表里的缓冲区，
+                <span class="Type">'buflisted'</span> 不会因而被置位。
+
+:<span class="Special">[N]</span>sb[uffer] <span class="Special">[N]</span>                                       <span class="String">:sb</span> <span class="String">:sbuffer</span>
+                分割窗口并编辑缓冲区列表中第 <span class="Special">[N]</span> 个缓冲区，如果没指定 <span class="Special">[N]</span>，就
+                编辑当前的缓冲区。分割时，适用 <span class="Type">'switchbuf'</span> 的 &quot;useopen&quot; 设置。
+                这个命令同样可以编辑不在列表里的缓冲区，<span class="Type">'buflisted'</span> 不会因而被
+                置位。
+
+:<span class="Special">[N]</span>sb[uffer] <span class="Special">{bufname}</span>
+                分割窗口并编辑缓冲区列表中 <span class="Special">{bufname}</span> 对应的缓冲区。这个命令同
+                样可以编辑不在列表里的缓冲区，<span class="Type">'buflisted'</span> 不会因而被置位。
+                <span class="Todo">备注</span>: 如果你想做的是分割缓冲区并在另一个名字下建立备份，可以这
+                么做:<span class="Ignore"> &gt;</span>
+<span class="Comment">                        :w foobar | sp #</span>
+
+:<span class="Special">[N]</span>bn[ext][!] <span class="Special">[N]</span>                                      <span class="String">:bn</span> <span class="String">:bnext</span> <span class="String">E87</span>
+                至缓冲区列表里往后第 <span class="Special">[N]</span> 个缓冲区。<span class="Special">[N]</span> 默认是 1。如果到了缓冲
+                区列表的末尾，则从头循环。
+                关于 [!] 参见 <span class="Identifier">:buffer-!</span>。
+                如果你在帮助缓冲区里，这条命令让你跳到后面的帮助缓冲区 (如果有
+                的话)。同样，你在一个正常 (非帮助) 缓冲区里，就会使你跳到后面
+                的正常缓冲区。这样是为了在打开帮助的时候不会影响到浏览正常的代
+                码或文本。下面三个命令都是如此。
+
+                                                        <span class="String">:sbn</span> <span class="String">:sbnext</span>
+:<span class="Special">[N]</span>sbn[ext] <span class="Special">[N]</span>
+                分割窗口并至缓冲区列表往后第 <span class="Special">[N]</span> 个缓冲区。如果到了缓冲区列表
+                的末尾，则从头循环。使用 <span class="Type">'switchbuf'</span>
+
+:<span class="Special">[N]</span>bN[ext][!] <span class="Special">[N]</span>              <span class="String">:bN</span> <span class="String">:bNext</span> <span class="String">:bp</span> <span class="String">:bprevious</span> <span class="String">E88</span>
+:<span class="Special">[N]</span>bp[revious][!] <span class="Special">[N]</span>
+                至缓冲区列表往前第 <span class="Special">[N]</span> 个缓冲区。<span class="Special">[N]</span> 默认是 1。如果到了缓冲区
+                列表的顶端，则从末尾往前循环。
+                关于 [!] 参见 <span class="Identifier">:buffer-!</span> 和 <span class="Type">'switchbuf'</span>。
+
+:<span class="Special">[N]</span>sbN[ext] <span class="Special">[N]</span>                <span class="String">:sbN</span> <span class="String">:sbNext</span> <span class="String">:sbp</span> <span class="String">:sbprevious</span>
+:<span class="Special">[N]</span>sbp[revious] <span class="Special">[N]</span>
+                分割窗口并至缓冲区列表往前第 <span class="Special">[N]</span> 个缓冲区。如果到了缓冲区列表
+                的顶端，则从末尾往前循环。使用 <span class="Type">'switchbuf'</span>
+
+                                                        <span class="String">:br</span> <span class="String">:brewind</span>
+:br[ewind][!]
+                至缓冲区列表中的第一个缓冲区。如果列表为空，则转到第一个列表外
+                缓冲区。
+                对于 [!] 参见 <span class="Identifier">:buffer-!</span>
+
+                                                        <span class="String">:bf</span> <span class="String">:bfirst</span>
+:bf[irst]       与 &quot;:brewind&quot; 相同。
+
+                                                        <span class="String">:sbr</span> <span class="String">:sbrewind</span>
+:sbr[ewind]     分割窗口并至缓冲区列表中的第一个缓冲区。如果列表为空，则转到第
+                一个列表外缓冲区。
+                还需考虑 <span class="Type">'switchbuf'</span> 选项。
+
+                                                        <span class="String">:sbf</span> <span class="String">:sbfirst</span>
+:sbf[irst]      与 &quot;:sbrewind&quot; 相同。
+
+                                                        <span class="String">:bl</span> <span class="String">:blast</span>
+:bl[ast][!]     至缓冲区列表中的最后一个缓冲区。如果列表为空，则转到最后一个列
+                表外缓冲区。
+                对于 [!] 参见 <span class="Identifier">:buffer-!</span>
+
+                                                        <span class="String">:sbl</span> <span class="String">:sblast</span>
+:sbl[ast]       分割窗口并至缓冲区列表中的最后一个缓冲区。如果列表为空，则转到
+                最后一个列表外缓冲区。
+                还需考虑 <span class="Type">'switchbuf'</span> 选项。
+
+:<span class="Special">[N]</span>bm[odified][!] <span class="Special">[N]</span>                          <span class="String">:bm</span> <span class="String">:bmodified</span> <span class="String">E84</span>
+                至往后第 <span class="Special">[N]</span> 个修改过的缓冲区。<span class="Todo">备注</span>: 这一命令同样也能找到列表
+                外缓冲区。如果没有修改的缓冲区，此命令失败。
+
+:<span class="Special">[N]</span>sbm[odified] <span class="Special">[N]</span>                                    <span class="String">:sbm</span> <span class="String">:sbmodified</span>
+                分割窗口并至往后第 <span class="Special">[N]</span> 个修改过的缓冲区。
+                还需考虑 <span class="Type">'switchbuf'</span> 选项。
+                <span class="Todo">备注</span>: 这个命令也能找到不在列表里的缓冲区。
+
+:<span class="Special">[N]</span>unh[ide] <span class="Special">[N]</span>                        <span class="String">:unh</span> <span class="String">:unhide</span> <span class="String">:sun</span> <span class="String">:sunhide</span>
+:<span class="Special">[N]</span>sun[hide] <span class="Special">[N]</span>
+                重新排列屏幕，给缓冲区列表中的每一个载入的缓冲区打开一个窗口。
+                如果给出计数，则计数为打开窗口的最多数目。
+
+:<span class="Special">[N]</span>ba[ll] <span class="Special">[N]</span>                                  <span class="String">:ba</span> <span class="String">:ball</span> <span class="String">:sba</span> <span class="String">:sball</span>
+:<span class="Special">[N]</span>sba[ll] <span class="Special">[N]</span> 重新排列屏幕，给缓冲区列表中的每一个缓冲区打开一个窗口。如果给
+                出计数，则计数为打开窗口的最多数目。'<span class="Type">'winheight'</span> 也限制了打开
+                窗口的数目 (当前缀 <span class="Identifier">:vertical</span> 时则为 <span class="Type">'winwidth'</span>)。
+                Buf/Win Enter/Leave 不会在新窗口执行，只有真正进入这些窗口时才
+                会。
+                如果使用 <span class="Identifier">:tab</span> 修饰符，新窗口在新标签页上打开，直到用完
+                <span class="Type">'tabpagemax'</span> 个标签页为止。
+
+<span class="Todo">备注</span>: 上面所有开始编辑另一个缓冲区的命令维持 <span class="Type">'readonly'</span> 的原值。这和 &quot;:edit&quot;
+命令不同，它每次读入文件时都会设置 <span class="Type">'readonly'</span> 标志位。
+
+<span class="PreProc">==============================================================================</span>
+12. 特殊类型缓冲区                              <span class="String">special-buffers</span>
+
+除了用来存放文本，缓冲区也可以用于其它目的。一些选项可以改变缓冲区的行为：
+        <span class="Type">'bufhidden'</span>     缓冲区不再在窗口里显示时的行为
+        <span class="Type">'buftype'</span>       缓冲区的类型
+        <span class="Type">'swapfile'</span>      缓冲区是否需要交换文件
+        <span class="Type">'buflisted'</span>     缓冲区是否在缓冲区列表中出现
+
+有用的缓冲区类型：
+
+quickfix        用来存放错误列表和位置列表。参见 <span class="Identifier">:cwindow</span> 和 <span class="Identifier">:lwindow</span>。这
+                些命令设置 <span class="Type">'buftype'</span> 的值为 &quot;quickfix&quot;。你不应该修改它！
+                <span class="Type">'swapfile'</span> 为关。
+
+help            包含帮助文件。只能用 <span class="Identifier">:help</span> 命令创建，缓冲区的帮助标志是内置
+                的，不能被更改。选项 <span class="Type">'buflisted'</span> 在帮助缓冲区里被复位。
+
+directory       显示目录内容。可用于文件探索器插件。该缓冲区由以下设置创建：<span class="Ignore"> &gt;</span>
+<span class="Comment">                        :setlocal buftype=nowrite</span>
+<span class="Comment">                        :setlocal bufhidden=delete</span>
+<span class="Comment">                        :setlocal noswapfile</span>
+<span class="Ignore">&lt;</span>               缓冲区的名字就是目录的名字，并且在使用 <span class="Identifier">:cd</span> 命令时会作出相应
+                的调整。
+
+scratch         该缓冲区包含的文本可以被随时扔掉。在关闭窗口时，缓冲区被保存下
+                来，要删除缓冲区必须显式进行。
+                设置如下：<span class="Ignore"> &gt;</span>
+<span class="Comment">                        :setlocal buftype=nofile</span>
+<span class="Comment">                        :setlocal bufhidden=hide</span>
+<span class="Comment">                        :setlocal noswapfile</span>
+<span class="Ignore">&lt;</span>               如果你能起个有意义的名字，缓冲区的名字可以用来标识该缓冲区。
+
+                                                <span class="String">unlisted-buffer</span>
+unlisted        该缓冲区不在缓冲区列表里。它不能用来编辑，但是可以显示帮助文
+                件、记住文件名或标记。&quot;:bdelete&quot; 命令也会设置这个选项，这样就
+                不会完全地删除该缓冲区。设置如下：<span class="Ignore"> &gt;</span>
+<span class="Comment">                        :setlocal nobuflisted</span>
+<span class="Ignore">&lt;</span>
+
+ vim:tw=78:ts=8:ft=help:norl:
+</pre>
+</body>
+</html>

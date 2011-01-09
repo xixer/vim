@@ -212,8 +212,8 @@ function! phpcomplete#CompletePHP(findstart, base)
 				for m in sort(keys(all_values))
 					if m =~ '^'.a:base && m !~ '::'
 						call add(res, m)
-					"elseif m =~ '::'.a:base
-					"	call add(res2, m)
+					elseif m =~ '::'.a:base
+						call add(res2, m)
 					endif
 				endfor
 

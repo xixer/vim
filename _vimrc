@@ -183,7 +183,7 @@ set incsearch
 set completeopt=menu,longest
 "增强模式中的命令行自动完成操作 
 set wildmenu 
-set wildmode=longest,list
+set wildmode=longest:full,full
 
 " Set up automatic formatting
 set formatoptions+=tcqlro
