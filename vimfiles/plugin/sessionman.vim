@@ -276,6 +276,11 @@ command! -nargs=? SessionSaveAs call s:SaveSessionAs(<f-args>)
 command! -nargs=0 SessionShowLast call s:ShowLastSession()
 
 "============================================================================"
+"nmenu <silent> &Plugin.S&essions.&Open\.\.\.		:SessionList<CR>
+"nmenu <silent> &Plugin.S&essions.Open\ &Last		:SessionOpenLast<CR>
+"nmenu <silent> &Plugin.S&essions.&Close				:SessionClose<CR>
+"nmenu <silent> &Plugin.S&essions.&Save				:SessionSave<CR>
+"nmenu <silent> &Plugin.S&essions.Save\ &As\.\.\.	:SessionSaveAs<CR>
 
 an 10.370 &File.-SessionsSep-				<Nop>
 an 10.371 &File.S&essions.&Open\.\.\.		:SessionList<CR>

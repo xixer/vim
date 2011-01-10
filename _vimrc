@@ -199,6 +199,11 @@ let g:acp_behavior = {
 \  'pattern' : printf('\(->\|::\|\$\)\k\{%d,}$', 0),
 \  'repeat'  : 0,
 \}
+" mru.vim
+let MRU_Exclude_Files = '^c:\\temp\\.*'
+let MRU_Window_Height = 10
+let MRU_Max_Menu_Entries = 9 
+
 
 " taglist.vim
 let Tlist_Auto_Highlight_Tag = 1
