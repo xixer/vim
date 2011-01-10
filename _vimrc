@@ -200,10 +200,11 @@ let g:acp_behavior = {
 \  'repeat'  : 0,
 \}
 " mru.vim
+let MRU_File = $HOME.'/_vim_mru'
 let MRU_Exclude_Files = '^c:\\temp\\.*'
 let MRU_Window_Height = 10
 let MRU_Max_Menu_Entries = 9 
-
+let MRU_Max_Entries = 10
 
 " taglist.vim
 let Tlist_Auto_Highlight_Tag = 1
