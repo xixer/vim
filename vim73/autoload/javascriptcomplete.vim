@@ -511,7 +511,7 @@ function! javascriptcomplete#CompleteJS(findstart, base)
 
 		for m in values
       
-			if m =~? '^'.a:base
+			if m =~# '^'.a:base
 				call add(res, m)
 			"elseif m =~? a:base
 			"	call add(res2, m)
@@ -594,7 +594,7 @@ function! javascriptcomplete#CompleteJS(findstart, base)
 	let values = variables + functions + htmldom + arguments + builtin + properties + keywords
 
 	for m in values
-		if m =~? '^'.a:base
+		if m =~# '^'.a:base
 			call add(res, m)
 "		elseif m =~? a:base
 "			call add(res2, m)

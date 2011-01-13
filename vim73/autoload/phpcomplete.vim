@@ -115,7 +115,7 @@ function! phpcomplete#CompletePHP(findstart, base)
 		let classes += sort(keys(g:php_omni_bi_classes))
 
 		for m in classes
-			if m =~ '^'.a:base
+			if m =~# '^'.a:base
 				call add(res, m)
 			endif
 		endfor
@@ -210,9 +210,9 @@ function! phpcomplete#CompletePHP(findstart, base)
 				call extend(all_values, c_variables)
 
 				for m in sort(keys(all_values))
-					if m =~ '^'.a:base && m !~ '::'
+					if m =~# '^'.a:base && m !~# '::'
 						call add(res, m)
-					elseif m =~ '::'.a:base
+					elseif m =~# '::'.a:base
 						call add(res2, m)
 					endif
 				endfor
@@ -330,7 +330,7 @@ function! phpcomplete#CompletePHP(findstart, base)
 		call extend(all_values, g:php_builtin_object_functions)
 
 		for m in sort(keys(all_values))
-			if m =~ '\(^\|::\)'.a:base
+			if m =~# '\(^\|::\)'.a:base
 				call add(res, m)
 			endif
 		endfor
@@ -426,7 +426,7 @@ function! phpcomplete#CompletePHP(findstart, base)
 		let g:a0 = keys(int_vars)
 
 		for m in sort(keys(int_vars))
-			if m =~ '^\'.a:base
+			if m =~# '^\'.a:base
 				call add(res, m)
 			endif
 		endfor
@@ -538,7 +538,7 @@ function! phpcomplete#CompletePHP(findstart, base)
 		call extend(all_values, g:php_keywords)
 
 		for m in sort(keys(all_values))
-			if m =~ '^'.a:base
+			if m =~# '^'.a:base
 				call add(res, m)
 			endif
 		endfor

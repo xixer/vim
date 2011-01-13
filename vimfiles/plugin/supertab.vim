@@ -309,7 +309,7 @@ function! s:SuperTab(command)
   " 当开始执行superTab时设置noignorecase,未实现C-x_C-o等方式补全
   " 可以通过修改*complete.vim来实现C-x_C-o补全
   set noignorecase
-  
+  echo  g:bUserIgnoreCase
   if s:WillComplete() 
     " rare case where no autocmds have fired for this buffer to initialize the
     " supertab vars.

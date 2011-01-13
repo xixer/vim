@@ -461,7 +461,7 @@ let g:calendar_navi_label = '上月,今天,下月'
 nmap <silent> <F11> :set tags+=$HOME/tags<CR>
 "au BufEnter *.php,*.phtml setlocal tags+=$HOME/tags
 
-nmap <C-F12> :call system("ctags --languages=php --tag-relative=no -f " . $HOME . "/tags -R " . getcwd() . "/library/Zend --fields=+lS")<CR>
+nmap <C-F12> :call system("ctags --php-kinds=-v --languages=php --tag-relative=no -f " . $HOME . "/tags -R " . getcwd() . "/library/Zend --fields=+lS")<CR>
 nmap <F12> :call system("ctags --exclude=Zend --languages=php --tag-relative=yes -R --fields=+lS")<CR> 
 
 " Fast editing of the .vimrc
