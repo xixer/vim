@@ -111,7 +111,7 @@ au BufNewFile,BufRead proftpd.conf*		call s:StarSetf('apachestyle')
 
 " Apache config file
 au BufNewFile,BufRead .htaccess,/etc/httpd/*.conf		 setf apache
-au BufNewFile,BufRead httpd.conf*,srm.conf*,access.conf*,apache.conf*,apache2.conf*,/etc/apache2/*.conf*,/etc/httpd/conf.d/*.conf* call s:StarSetf('apache')
+au BufNewFile,BufRead httpd.conf*,srm.conf*,access.conf*,apache.conf*,apache2.conf*,D:/Zend/Apache2/conf/*.conf*,/etc/apache2/*.conf*,/etc/httpd/conf.d/*.conf* call s:StarSetf('apache')
 
 " XA65 MOS6510 cross assembler
 au BufNewFile,BufRead *.a65			setf a65
