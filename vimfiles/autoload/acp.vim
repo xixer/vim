@@ -309,7 +309,7 @@ function s:isModifiedSinceLastCall()
 endfunction
 
 "
-function s:makeCurrentBehaviorSet()
+function! s:makeCurrentBehaviorSet()
   let modified = s:isModifiedSinceLastCall()
   if exists('s:behavsCurrent[s:iBehavs].repeat') && s:behavsCurrent[s:iBehavs].repeat
     let behavs = [ s:behavsCurrent[s:iBehavs] ]

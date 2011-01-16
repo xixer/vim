@@ -1,1 +1,3 @@
 supertab.vba: call delete('d:\Vim\vimfiles/doc/supertab.txt')|call delete('d:\Vim\vimfiles/plugin/supertab.vim')
+zenburn.vba: call delete('d:\Vim\vimfiles/colors/zenburn.vim')
+rainbow_parenthsis-4.0.vba: call delete('d:\Vim\vimfiles/autoload/rainbow_parenthsis.vim')|call delete('d:\Vim\vimfiles/doc/rainbow_parenthsis.txt')|call delete('d:\Vim\vimfiles/plugin/rainbow_parenthsis.vim')|call delete('d:\Vim\vimfiles/rainbow_parenthsis_options.vim')

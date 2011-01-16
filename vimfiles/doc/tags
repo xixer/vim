@@ -87,6 +87,7 @@
 :TlistUndebug	taglist.txt	/*:TlistUndebug*
 :TlistUnlock	taglist.txt	/*:TlistUnlock*
 :TlistUpdate	taglist.txt	/*:TlistUpdate*
+:ToggleRaibowParenthesis	rainbow_parenthsis.txt	/*:ToggleRaibowParenthesis*
 :UseVimball	pi_vimball.txt	/*:UseVimball*
 :VWS	vimwiki.txt	/*:VWS*
 :VimballList	pi_vimball.txt	/*:VimballList*
@@ -473,6 +474,18 @@ o_[%	matchit.txt	/*o_[%*
 o_]%	matchit.txt	/*o_]%*
 o_g%	matchit.txt	/*o_g%*
 pi_vimball.txt	pi_vimball.txt	/*pi_vimball.txt*
+rainbow_parenthsis#Activate()	rainbow_parenthsis.txt	/*rainbow_parenthsis#Activate()*
+rainbow_parenthsis#Clear()	rainbow_parenthsis.txt	/*rainbow_parenthsis#Clear()*
+rainbow_parenthsis#LoadBraces()	rainbow_parenthsis.txt	/*rainbow_parenthsis#LoadBraces()*
+rainbow_parenthsis#LoadChevrons()	rainbow_parenthsis.txt	/*rainbow_parenthsis#LoadChevrons()*
+rainbow_parenthsis#LoadRound()	rainbow_parenthsis.txt	/*rainbow_parenthsis#LoadRound()*
+rainbow_parenthsis#LoadSquare()	rainbow_parenthsis.txt	/*rainbow_parenthsis#LoadSquare()*
+rainbow_parenthsis#Toggle()	rainbow_parenthsis.txt	/*rainbow_parenthsis#Toggle()*
+rainbow_parenthsis-about	rainbow_parenthsis.txt	/*rainbow_parenthsis-about*
+rainbow_parenthsis-commands	rainbow_parenthsis.txt	/*rainbow_parenthsis-commands*
+rainbow_parenthsis-configure	rainbow_parenthsis.txt	/*rainbow_parenthsis-configure*
+rainbow_parenthsis-functions	rainbow_parenthsis.txt	/*rainbow_parenthsis-functions*
+rainbow_parenthsis.txt	rainbow_parenthsis.txt	/*rainbow_parenthsis.txt*
 s_<C-\>	xptemplate.txt	/*s_<C-\\>*
 s_<C-l>	xptemplate.txt	/*s_<C-l>*
 s_<CR>	xptemplate.txt	/*s_<CR>*
