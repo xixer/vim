@@ -645,30 +645,49 @@ endfor
 " }}}
 " Leader commands {{{1 
 let mapleader = ','                                     " 设置mapleader使用`,`代替 `\`
-nmap <silent> <leader>hl <Plug>MarkSet                  " / 
-vmap <silent> <leader>hl <Plug>MarkSet                  " / 
-nmap <silent> <leader>hh <Plug>MarkClear                " / mark.vim
-vmap <silent> <leader>hh <Plug>MarkClear                " / support regex
-nmap <silent> <leader>hr <Plug>MarkRegex                " / 
-vmap <silent> <leader>hr <Plug>MarkRegex                " /
-nmap <leader>tt <Plug>VimwikiToggleListItem             " 切换列表项开/关(vimwiki.vim)
-nmap <leader>v :tabf $MYVIMRC<CR>                       " 快速修改 .vimrc
-nmap <leader>cd :cd %:p:h<CR>                           " 切换至当前目录
-nmap <leader>s :w! <CR>                                 " 快速保存
-nmap <Leader>x :silent ! start "1" "%:p"<CR>            " 默认程序打开当前缓冲区文件
-nmap K :silent ! start http://php.net/<cword><CR>       " 查看当前光标下关键词的PHP手册
-"nmap <Leader>s :source $MYVIMRC<CR>                    " 重新加载 .vimrc
-nmap <leader>nu :set nu<CR>                             " 显示行号
-nmap <leader>rnu :set rnu<CR>                           " 显示相对于光标所在的行的行号
-nmap <Leader>dm mmHmn:%s/<C-V><CR>//ge<CR>'nzt'm        " 删除 ^M
-nmap <silent> <leader><CR> :noh<CR>                     " 停止`hlsearch`的选项的高亮显示
-nmap <leader>l :set list!<CR>                           " 快速切换`set list` or `set nolist`
-map <leader>ew :e <C-R>=expand("%:p:h") . "/" <CR>      " 在当前缓冲区打开当前文件目录下的文件
-map <leader>es :sp <C-R>=expand("%:p:h") . "/" <CR>     " 以水平分割的方式打开当前文件目录下的文件
-map <leader>ev :vsp <C-R>=expand("%:p:h") . "/" <CR>    " 以垂直分割的方式打开当前文件目录下的文件
-map <leader>et :tabe <C-R>=expand("%:p:h") . "/" <CR>   " 以Tab标签的方式打开当前文件目录下的文件
-nmap <leader>ft Vatzf                                   " 折叠标签
-nmap <leader>R :RainbowParenthesesToggle<CR>            " 高亮括号
+" mark.vim support regex
+nmap <silent> <leader>hl <Plug>MarkSet
+vmap <silent> <leader>hl <Plug>MarkSet
+nmap <silent> <leader>hh <Plug>MarkClear
+vmap <silent> <leader>hh <Plug>MarkClear
+nmap <silent> <leader>hr <Plug>MarkRegex
+vmap <silent> <leader>hr <Plug>MarkRegex
+" 切换列表项开/关(vimwiki.vim)
+nmap <leader>tt <Plug>VimwikiToggleListItem
+" 快速修改 .vimrc
+nmap <leader>v :tabf $MYVIMRC<CR>
+" 切换至当前目录
+nmap <leader>cd :cd %:p:h<CR>
+" 快速保存
+nmap <leader>s :w! <CR>
+" 默认程序打开当前缓冲区文件
+nmap <Leader>x :silent ! start "1" "%:p"<CR>
+" 查看当前光标下关键词的PHP手册
+nmap K :silent ! start http://php.net/<cword><CR>       
+" 重新加载 .vimrc
+"nmap <Leader>s :source $MYVIMRC<CR>
+" 显示行号
+nmap <leader>nu :set nu<CR>
+" 显示相对于光标所在的行的行号
+nmap <leader>rnu :set rnu<CR>
+" 删除 ^M
+nmap <Leader>dm mmHmn:%s/<C-V><CR>//ge<CR>'nzt'm
+" 停止`hlsearch`的选项的高亮显示
+nmap <silent> <leader><CR> :noh<CR>
+" 快速切换`set list` or `set nolist`
+nmap <leader>l :set list!<CR>
+" 在当前缓冲区打开当前文件目录下的文件
+map <leader>ew :e <C-R>=expand("%:p:h") . "/" <CR>
+" 以水平分割的方式打开当前文件目录下的文件
+map <leader>es :sp <C-R>=expand("%:p:h") . "/" <CR>
+" 以垂直分割的方式打开当前文件目录下的文件
+map <leader>ev :vsp <C-R>=expand("%:p:h") . "/" <CR>
+" 以Tab标签的方式打开当前文件目录下的文件
+map <leader>et :tabe <C-R>=expand("%:p:h") . "/" <CR>
+" 折叠标签
+nmap <leader>ft Vatzf
+" 高亮括号
+nmap <leader>R :RainbowParenthesesToggle<CR>
 "搜索选中文字,全文高度搜索
 "vnoremap <silent> <leader>/ y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
 "vnoremap <silent> <leader>? y?<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
