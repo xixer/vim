@@ -248,7 +248,11 @@ nmap <F4> :BufExplorer<CR>
 
 " NERDTree.vim {{{2
 let NERDShutUp = 1
-map <F9> :NERDTreeToggle<CR>
+" map <F9> :NERDTreeToggle<CR>
+
+" NERD_tree_project.vim
+map <F9> :ToggleNERDTree<CR>
+
 " NERD_commenter.vim
 let NERDSpaceDelims=1       " 让注释符与语句之间留一个空格
 let NERDCompactSexyComs=1   " 多行注释时样子更好看
@@ -265,11 +269,11 @@ hi MarkWord6  ctermbg=Blue     ctermfg=Black  guibg=#9999FF    guifg=Black
 "启动程序时开始背景透明
 "au GUIENTER * call libcallnr("vimtweak.dll","SetAlpha",222)
 "透明/不透明窗口
-nmap <C-t><C-t> :call libcallnr("vimtweak.dll","SetAlpha",210)<CR> 
-nmap <C-t>Y :call libcallnr("vimtweak.dll","SetAlpha",255)<CR>
+nmap <S-t> :call libcallnr("vimtweak.dll","SetAlpha",255)<CR> 
+nmap <C-t> :call libcallnr("vimtweak.dll","SetAlpha",210)<CR>
 "最大化/小化窗口
-"nmap <C-m>M :call libcallnr("vimtweak.dll", "EnableMaximize", 0)<CR>
-"nmap <C-m><C-m> :call libcallnr("vimtweak.dll", "EnableMaximize", 1)<CR>
+nmap <S-m> :call libcallnr("vimtweak.dll", "EnableMaximize", 0)<CR>
+nmap <C-m> :call libcallnr("vimtweak.dll", "EnableMaximize", 1)<CR>
 
 " php.vim {{{2
 let php_alt_construct_parents = 1
@@ -439,8 +443,8 @@ inoremap <C-e> <End>
 "inoremap <C-a> <C-o>I
 
 " 插入模式下模拟eclipse在当前行上/下开启新行
-imap <S-Enter> <C-o>o
-imap <C-S-Enter> <C-o>O
+imap <C-Enter> <C-o>o
+imap <S-Enter> <C-o>O
 
 nnoremap <tab> %
 vnoremap <tab> %
