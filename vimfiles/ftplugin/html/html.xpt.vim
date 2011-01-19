@@ -249,6 +249,9 @@ XPT script " <script language="javascript"...
 XPT scriptsrc " <script .. src=...
 <script type="text/javascript" src="`js^.js"></script>
 
+XPT apijquery " <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
 
 XPT body " <body>..</body>
 <body>

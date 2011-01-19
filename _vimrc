@@ -210,10 +210,11 @@ nmap <silent> <F8> :WMToggle<CR>
 " supertab.vim {{{2
 let g:SuperTabRetainCompletionDuration = "session"
 let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
-let g:SuperTabCrMapping = 0
+let g:SuperTabCrMapping = 1
 let g:SuperTabLongestEnhanced = 1
 let g:SuperTabLongestHighlight = 1
-
+let g:SuperTabNoCompleteBefore = ['\k']
+let g:SuperTabNoCompleteAfter = [',', '\s', '(', ')']
 " fencview.vim {{{2
 let g:fencview_autodetect = 0  "打开文件时自动识别编码
 "let g:fencview_checklines = 10 "检查前后10行来判断编码
@@ -272,7 +273,7 @@ hi MarkWord6  ctermbg=Blue     ctermfg=Black  guibg=#9999FF    guifg=Black
 nmap <S-t> :call libcallnr("vimtweak.dll","SetAlpha",255)<CR> 
 nmap <C-t> :call libcallnr("vimtweak.dll","SetAlpha",210)<CR>
 "最大化/小化窗口
-nmap <S-m> :call libcallnr("vimtweak.dll", "EnableMaximize", 0)<CR>
+" nmap <S-m> :call libcallnr("vimtweak.dll", "EnableMaximize", 0)<CR>
 nmap <C-m> :call libcallnr("vimtweak.dll", "EnableMaximize", 1)<CR>
 
 " php.vim {{{2
