@@ -416,11 +416,16 @@ let g:calendar_navi_label = '上月,今天,下月'
 nmap <silent> <F11> :set tags+=$HOME/tags<CR>
 "au BufEnter *.php,*.phtml setlocal tags+=$HOME/tags
 
+" ZendFramework Tag 相关
 nmap <C-F12> :call system("ctags --php-kinds=-v --languages=php --tag-relative=no -f " . $HOME . "/tags -R " . getcwd() . "/library/Zend --fields=+lS")<CR>
 nmap <F12> :call system("ctags --exclude=Zend --languages=php --tag-relative=yes -R --fields=+lS")<CR> 
+" vimwiki 相关
 map <C-F2> :exec 'silent !start cmd /k "cd /d "'.VimwikiGet('path_html').'" & sync"'<CR>
 map <S-F2> :VimwikiAll2HTML<CR>
 map <F2> :Vimwiki2HTML<CR>
+
+" 查看当前光标下关键词的PHP手册
+nmap K :silent ! start http://php.net/<cword><CR> 
 
 " 快速切换缓冲区
 map <C-k> <C-W>k
@@ -428,27 +433,25 @@ map <C-j> <C-W>j
 map <C-h> <C-W>h
 map <C-l> <C-W>l
 
-nmap <C-D> <C-W>q
+" nmap <C-D> <C-W>q
 
 " 在输入模式下移动光标，彻底抛弃方向键
-inoremap <C-h> <left>
-inoremap <C-j> <C-o>gj
-inoremap <C-k> <C-o>gk
-inoremap <C-l> <Right>
-inoremap <M-h> <C-o>b
-inoremap <M-l> <C-o>w
+" inoremap <C-h> <left>
+" inoremap <C-j> <C-o>gj
+" inoremap <C-k> <C-o>gk
+" inoremap <C-l> <Right>
 " 插入模式下模拟HOME/END键
-inoremap <C-a> <Home>
-inoremap <C-e> <End>
-"inoremap <C-e> <C-o>A
-"inoremap <C-a> <C-o>I
+" inoremap <C-a> <Home>
+" inoremap <C-e> <End>
+" inoremap <C-e> <C-o>A
+" inoremap <C-a> <C-o>I
 
 " 插入模式下模拟eclipse在当前行上/下开启新行
 imap <C-Enter> <C-o>o
 imap <S-Enter> <C-o>O
 
-nnoremap <tab> %
-vnoremap <tab> %
+" nnoremap <tab> %
+" vnoremap <tab> %
 
 " 自定义函数调用GIT进行pull push操作(-nargs=1 只接受一个参数)
 command! -nargs=? Git call CallGit(<f-args>)
@@ -589,7 +592,8 @@ nnoremap <BS> c
 "nnoremap <C-y> <C-R>
 " ctrl + v (粘贴)
 "nnoremap <C-v> a<space>"+gP<esc>
-inoremap <C-v> <C-O>"+gP    " 兼容ClipX
+" 兼容ClipX
+inoremap <C-v> <C-O>"+gP
 "map <C-V> "+pa<Esc>
 "map! <C-V> <Esc>"+pa
 " ctrl + f (查找)
@@ -666,9 +670,7 @@ nmap <leader>cd :cd %:p:h<CR>
 " 快速保存
 nmap <leader>s :w! <CR>
 " 默认程序打开当前缓冲区文件
-nmap <Leader>x :silent ! start "1" "%:p"<CR>
-" 查看当前光标下关键词的PHP手册
-nmap K :silent ! start http://php.net/<cword><CR>       
+nmap <Leader>x :silent ! start "1" "%:p"<CR>      
 " 重新加载 .vimrc
 "nmap <Leader>s :source $MYVIMRC<CR>
 " 显示行号
@@ -682,7 +684,7 @@ nmap <silent> <leader><CR> :noh<CR>
 " 快速切换`set list` or `set nolist`
 nmap <leader>l :set list!<CR>
 " 在当前缓冲区打开当前文件目录下的文件
-map <leader>ew :e <C-R>=expand("%:p:h") . "/" <CR>
+map <leader>ee :e <C-R>=expand("%:p:h") . "/" <CR>
 " 以水平分割的方式打开当前文件目录下的文件
 map <leader>es :sp <C-R>=expand("%:p:h") . "/" <CR>
 " 以垂直分割的方式打开当前文件目录下的文件
