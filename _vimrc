@@ -35,6 +35,7 @@ set hi=400                          " 历史记录数 (history)
 " set nolz                            " 关闭延迟重画 (lazyredraw)
 set so=7                            " 光标上下两侧最少保留的屏幕行数 (scrolloff)
 set cmdheight=2                     " 命令行使用的屏幕行数
+set laststatus=2                    " 总是显示状态行
 set hidden                          " Change buffer - without saving
 "set noerrorbells                   " 关闭错误信息响铃(默认关闭)
 "set novisualbell                   " 关闭可视响铃代替鸣叫,置空错误铃声的终端代码(默认关闭)
@@ -61,7 +62,6 @@ set foldmethod=manual               " 手动建立折叠
 set listchars=tab:▸\ ,eol:$         " 设置tab,eol字符
 "set keywordprg=pman
 set ambiwidth=double                " 对"不明宽度"字符的的宽度设置为双倍字符宽度(中文字符宽度)
-set laststatus=2                    " 问题显示状态行
 "set autoread                       " 当文件在VIM之外修改过,VIM里面没有的话,重新载入
 set report=0                        " 报告改变行数的阈值,0时总是得到消息
 set diffopt+=vertical,context:3     " diff模式选项(垂真分割,差异文周围不被折叠的行数)
@@ -142,7 +142,7 @@ if has("autocmd")
     autocmd FileType php compiler php
     autocmd FileType php map <buffer> <leader><space> <leader>cd:w<cr>:make %<cr>
     autocmd BufReadPost * if line("'\"") > 0|if line("'\"") <= line("$")|exe("norm '\"")|else|exe "norm $"|endif|endif      " 保存光标位置
-    autocmd Filetype *
+    autocmd BufWinEnter *
     \ if &omnifunc == "" |
     \   setlocal omnifunc=syntaxcomplete#Complete |
     \ endif
