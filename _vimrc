@@ -69,7 +69,7 @@ if has('mouse')
     set mouse=a                     " 在所有模式下使用鼠标
 endif
 
-language messages zh_CN.utf-8       " 设置当前语言(locale)
+language messages zh_cn.utf-8       " 设置当前语言(locale)
 " }}}
 " Gui-running & Autocmd {{{1
 " Gui-running {{{2
@@ -270,11 +270,11 @@ hi MarkWord6  ctermbg=Blue     ctermfg=Black  guibg=#9999FF    guifg=Black
 "启动程序时开始背景透明
 "au GUIENTER * call libcallnr("vimtweak.dll","SetAlpha",222)
 "透明/不透明窗口
-nmap <S-t> :call libcallnr("vimtweak.dll","SetAlpha",255)<CR> 
-nmap <C-t> :call libcallnr("vimtweak.dll","SetAlpha",210)<CR>
+nmap <C-F6> :call libcallnr("vimtweak.dll","SetAlpha",255)<CR> 
+nmap <F6> :call libcallnr("vimtweak.dll","SetAlpha",210)<CR>
 "最大化/小化窗口
-" nmap <S-m> :call libcallnr("vimtweak.dll", "EnableMaximize", 0)<CR>
-nmap <C-m> :call libcallnr("vimtweak.dll", "EnableMaximize", 1)<CR>
+nmap <C-F7> :call libcallnr("vimtweak.dll", "EnableMaximize", 0)<CR>
+nmap <F7> :call libcallnr("vimtweak.dll", "EnableMaximize", 1)<CR>
 
 " php.vim {{{2
 let php_alt_construct_parents = 1
@@ -352,12 +352,17 @@ let g:user_zen_settings = {
 \}
 
 " grep.vim {{{2
-let Grep_Path = $VIMRUNTIME . '\tools\grep.exe'
-let Fgrep_Path = $VIMRUNTIME . '\tools\fgrep.exe'
-let Egrep_Path = $VIMRUNTIME . '\tools\egrep.exe'
-let Agrep_Path = $VIMRUNTIME . '\tools\agrep.exe'
-let Grep_Find_Path = $VIMRUNTIME . '\tools\find.exe'
-let Grep_Xargs_Path = $VIMRUNTIME . '\tools\xargs.exe'
+" let Grep_Path = $VIMRUNTIME . '\tools\grep.exe'
+" let Fgrep_Path = $VIMRUNTIME . '\tools\fgrep.exe'
+" let Egrep_Path = $VIMRUNTIME . '\tools\egrep.exe'
+" let Agrep_Path = $VIMRUNTIME . '\tools\agrep.exe'
+" let Grep_Find_Path = $VIMRUNTIME . '\tools\find.exe'
+" let Grep_Xargs_Path = $VIMRUNTIME . '\tools\xargs.exe'
+let Grep_Path = 'D:\cygwin\bin\grep.exe'
+let Fgrep_Path = 'D:\cygwin\bin\fgrep.exe'
+let Egrep_Path = 'D:\cygwin\bin\egrep.exe'
+let Grep_Find_Path = 'D:\cygwin\bin\find.exe'
+let Grep_Xargs_Path = 'D:\cygwin\bin\xargs.exe'
 let Grep_Skip_Dirs = '.svn'
 nmap <silent> <F3> :Grep<CR>
 
@@ -693,8 +698,6 @@ map <leader>ev :vsp <C-R>=expand("%:p:h") . "/" <CR>
 map <leader>et :tabe <C-R>=expand("%:p:h") . "/" <CR>
 " 折叠标签
 nmap <leader>ft Vatzf
-" 高亮括号
-nmap <leader>R :RainbowParenthesesToggle<CR>
 "搜索选中文字,全文高度搜索
 "vnoremap <silent> <leader>/ y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
 "vnoremap <silent> <leader>? y?<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>

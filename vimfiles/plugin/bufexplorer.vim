@@ -343,18 +343,19 @@ function! StartBufExplorer(open)
     if !has("win32")
         " On non-Windows boxes, escape the name so that is shows up correctly.
         let name = escape(name, "[]")
-        call s:BEError("Escaped")
+        "call s:BEError("Escaped")
     endif
 
     " Make sure there is only one explorer open at a time.
     if s:running == 1
-        call s:BEError("WHAT THE 1")
+        " call s:BEError("WHAT THE 1")
         " Go to the open buffer.
-        if has("gui")
-            call s:BEError("WHAT THE 2")
-            call s:BEError(name)
-            exec "drop" name
-        endif
+        " if has("gui")
+            "call s:BEError("WHAT THE 2")
+            "call s:BEError(name)
+            " exec "drop" name
+            call <SID>BEClose("quit")
+        " endif
 
         return
     endif

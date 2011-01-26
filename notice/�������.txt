@@ -30,3 +30,18 @@ php.vim			php语法着色(修改版)
 fontsize-0.2.0.vba		增大/减*-小字体
 vimwiki-1-1-1.vba.gz		VIMWIKI(SEE:wiki.7color.org TODO)
 calendar.vim		日历插件,配合vimwiki使用
+
+
+
+-------------------------------------
+F2 vimwiki2HTML
+F3 Grep
+F4 minibuffer
+F5 compiler php
+F6 透明度
+F7 最大化
+F8 winmanager
+F9 NERDTree
+F10 Tlist
+F11 set tag
+F12 Zend相关
