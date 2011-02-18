@@ -254,6 +254,7 @@ endfunction " }}}
 " s:ManualCompletionEnter() {{{
 " Handles manual entrance into completion mode.
 function! s:ManualCompletionEnter()
+  call s:InitBuffer()
   if &smd
     echo '' | echohl ModeMsg | echo '-- ^X++ mode (' . s:modes . ')' | echohl None
   endif
