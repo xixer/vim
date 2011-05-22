@@ -399,6 +399,10 @@ let g:vimwiki_camel_case = 0
 let g:vimwiki_hl_cb_checked = 1 
 "menu 设置
 let g:vimwiki_menu="Plugin.Vimwiki"
+" 转换换行符
+let g:vimwiki_list_ignore_newlin = 1
+" 增加可以在vimwiki中使用的HTML标签
+let g:vimwiki_valid_html_tags = "em,b,i,s,u,sub,sup,kbd,br,hr"
 " 待办事项进度0%,25%,50%,75%,100%
 let g:vimwiki_listsyms="01234"
 " 生成HTML时忽略指定文件列表(自定义,demo\/格式为指定忽略文件夹)
