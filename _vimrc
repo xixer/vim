@@ -265,6 +265,8 @@ hi MarkWord3  ctermbg=Yellow   ctermfg=Black  guibg=#FFDB72    guifg=Black
 hi MarkWord4  ctermbg=Red      ctermfg=Black  guibg=#FF7272    guifg=Black
 hi MarkWord5  ctermbg=Magenta  ctermfg=Black  guibg=#FFB3FF    guifg=Black
 hi MarkWord6  ctermbg=Blue     ctermfg=Black  guibg=#9999FF    guifg=Black
+let g:mwAutoLoadMarks = 1   " 自动加载mark标记
+let g:mwAutoSaveMarks = 0   " 自动保存mark标记
 
 " vimtweak.dll {{{2
 "启动程序时开始背景透明
